@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<uc-export clientvers="12.3.1+build.1570622767455">
+<STORE name="STORE.TEST.PLAIN">
+<HEADER state="1">
+<Title/>
+<ArchiveKey1/>
+<ArchiveKey2/>
+<OH_SubType/>
+</HEADER>
+<STORE>
+<HostType/>
+<resourceList/>
+</STORE>
+<DOCU_Docu state="1" type="text">
+<DOC/>
+</DOCU_Docu>
+</STORE>
+</uc-export>

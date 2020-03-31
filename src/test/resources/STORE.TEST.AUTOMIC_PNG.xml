@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-15"?>
+<uc-export clientvers="12.3.1+build.1570622767455">
+<STORE name="STORE.TEST.AUTOMIC_PNG">
+<HEADER state="1">
+<Title/>
+<ArchiveKey1/>
+<ArchiveKey2/>
+<OH_SubType/>
+</HEADER>
+<STORE>
+<HostType/>
+<resourceList>
+<row checksum="BB5DD42BB3845C794C494AEE23815BF0BB601739CED75B83217913857C22F619" fileType="BINARY" filename="automic.png" hw="*" id="AUTOMIC-ALL-ALL-ALL" name="AUTOMIC" platform="*" resname="STORE.TEST.AUTOMIC_PNG-AUTOMIC-ALL-ALL-ALL" size="4076" sw="*" type="3" version=""/>
+</resourceList>
+</STORE>
+<DOCU_Docu state="1" type="text">
+<DOC/>
+</DOCU_Docu>
+</STORE>
+</uc-export>

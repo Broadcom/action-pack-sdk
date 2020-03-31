@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<uc-export clientvers="12.3.1+build.1570622767455">
+<VARA OVD_VRName="FREI" data_type="STATIC" name="PCK.CUSTOM_APDK_TEST1.PUB.VAR.METADATA" replacementmode="2">
+<HEADER state="1">
+<Title/>
+<ArchiveKey1/>
+<ArchiveKey2/>
+<OH_SubType>STATIC</OH_SubType>
+</HEADER>
+<ATTR_VARA state="1">
+<Type>C|Text</Type>
+<lblSource>Static</lblSource>
+<source>STATIC</source>
+<VRName>FREI|Freely selected</VRName>
+<NotFoundErr>0</NotFoundErr>
+<NotFoundDef>1</NotFoundDef>
+<ShareN>0</ShareN>
+<ShareL>0</ShareL>
+<ShareR>0</ShareR>
+<MaxValue_C>1024</MaxValue_C>
+<CheckMax_C>0</CheckMax_C>
+<uppercase>0</uppercase>
+<sortColumn>0</sortColumn>
+<sortDirection>0</sortDirection>
+<HostType/>
+</ATTR_VARA>
+<VARA state="1">
+<Variables>
+<row Name="Company" Value="Broadcom" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Categories" Value="APDK Tests" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Dependencies" Value="PCK.ITPA_SHARED ~&gt; 1.2" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Description" Value="" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Homepage" Value="http://www.broadcom.com" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="License" Value="" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Name" Value="PCK.CUSTOM_APDK_TEST1" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Package Format Version" Value="0.3.0" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Title" Value="PCK.CUSTOM_APDK_TEST1" Value1="" Value2="" Value3="" Value4=""/>
+<row Name="Version" Value="1.0.0-SNAPSHOT" Value1="" Value2="" Value3="" Value4=""/>
+</Variables>
+</VARA>
+<DOCU_Docu state="1" type="text">
+<DOC/>
+</DOCU_Docu>
+</VARA>
+</uc-export>
