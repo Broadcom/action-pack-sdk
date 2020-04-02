@@ -15,13 +15,6 @@ Install the development kit in your local Maven repository
 mvn install
 ```
 
-## Run
-This JAR-file doesn't contain its dependencies. Please make sure that all dependencies are available on the classpath or create an executable JAR-file that contains all dependencies!
-
-```
-java -jar apdk.jar -h
-```
-
 ## Usage
 ### Create a new project using the action-pack-archetype
 This is probably the easiest way to create a new action pack. Download and build the action-pack-archetype and install it in your local Maven repository. As soon as the action-pack-archetype is available you may create a new project with the following command:
@@ -150,3 +143,12 @@ This plugin may be used to execute the generated executable JAR file at the end 
   </executions>
 </plugin>
 ```
+
+### Test your action pack
+Even without installing the action pack in Automic Automation or Automic Continuous Devlivery Automation you can test its functionality. If you implemented your action pack based on the provided archetype building the project will result in an executable JAR file. Use the following command to see what options you have:
+
+```
+java -jar <name of your jar-file> -h
+```
+
+
