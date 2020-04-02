@@ -2,29 +2,29 @@ package com.broadcom.apdk.objects;
 
 public interface IPromptText extends IPrompt<String> {
 	
-	public void setRequired(Boolean required);
+	void setRequired(Boolean required);
 	
-	public Boolean isRequired();
+	Boolean isRequired();
 	
-	public void setInputAssistance(Boolean assistant);
+	void setInputAssistance(Boolean assistant);
 	
-	public Boolean isInputAssistance();	
+	Boolean isInputAssistance();	
 	
-	public void setMultiline(Boolean multiline);
+	void setMultiline(Boolean multiline);
 	
-	public Boolean isMultiline();	
+	Boolean isMultiline();	
 	
-	public void setUpperCase(Boolean uppercase);
+	void setUpperCase(Boolean uppercase);
 	
-	public Boolean isUpperCase();
+	Boolean isUpperCase();
 	
-	public void setMultiselect(Boolean multiselect);
+	void setMultiselect(Boolean multiselect);
 	
-	public Boolean isMultiselect();
+	Boolean isMultiselect();
 	
-	public void setRegEx(String regex);
+	void setRegEx(String regex);
 	
-	public String getRegEx();
+	String getRegEx();
 	
 	public void setMaxLength(Integer length);
 	

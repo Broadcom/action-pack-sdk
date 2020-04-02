@@ -4,58 +4,58 @@ import java.util.List;
 
 public interface IJob extends IExecutableAutomicObject {
 	
-	public void setPostScript(String script);
+	void setPostScript(String script);
 	
-	public String getPostScript();
+	String getPostScript();
 	
-	public void setPreScript(String script);
+	void setPreScript(String script);
 	
-	public String getPreScript();	
+	String getPreScript();	
 	
-	public void setExtendedReport(ExtendedReport extendedReport);
+	void setExtendedReport(ExtendedReport extendedReport);
 
-	public ExtendedReport getExtendedReport();
+	ExtendedReport getExtendedReport();
 	
-	public void setInternalAccount(String internalAccount);
+	void setInternalAccount(String internalAccount);
 	
-	public String getInternalAccount();
+	String getInternalAccount();
 	
-	public void setCodeTable(String codeTable);
+	void setCodeTable(String codeTable);
 	
-	public String getCodeTable();
+	String getCodeTable();
 	
-	public void setCommand(String command);
+	void setCommand(String command);
 	
-	public String getCommand();
+	String getCommand();
 	
-	public void setLogin(String login);
+	void setLogin(String login);
 	
-	public String getLogin();
+	String getLogin();
 	
-	public void setAgent(String agent);
+	void setAgent(String agent);
 	
-	public String getAgent();
+	String getAgent();
 	
-	public void setDisplayAttrDialogAtActivation(Boolean display);
+	void setDisplayAttrDialogAtActivation(Boolean display);
 	
-	public Boolean isDisplayAttrDialogAtActivation();
+	Boolean isDisplayAttrDialogAtActivation();
 	
-	public void setOutputScanInheritance(Boolean inheritance);
+	void setOutputScanInheritance(Boolean inheritance);
 	
-	public Boolean isOutputScanInheritance();
+	Boolean isOutputScanInheritance();
 	
-	public void setOutputScanAgent(String agent);
+	void setOutputScanAgent(String agent);
 	
-	public String getOutputScanAgent();
+	String getOutputScanAgent();
 	
-	public void setOutputScanLogin(String login);
+	void setOutputScanLogin(String login);
 	
-	public String getOutputScanLogin();
+	String getOutputScanLogin();
 	
-	public void setOutputScanFilterObjects(List<OutputScanFilterObject> filterObjects);
+	void setOutputScanFilterObjects(List<OutputScanFilterObject> filterObjects);
 	
-	public List<OutputScanFilterObject> getOutputScanFilterObjects();
+	List<OutputScanFilterObject> getOutputScanFilterObjects();
 	
-	public String getHostType();
+	String getHostType();
 
 }

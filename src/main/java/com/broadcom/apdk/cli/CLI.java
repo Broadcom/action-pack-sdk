@@ -201,20 +201,18 @@ public class CLI {
 			for (String paramName : params.keySet()) {
 				Field field = params.get(paramName);
 				String paramValue = ActionHelper.getParamAsString(field, action);
-				// Check if specific variable name was defined
-				String variableName = ActionHelper.getVariableNameFromParam(field, ActionOutputParam.class);
-				String pureName = variableName;
-				if (pureName.startsWith("&")) {
-					pureName = pureName.substring(1);
+				String variableName = ActionHelper.getVariableNameFromParam(field, ActionOutputParam.class);	
+				if (variableName.startsWith("&")) {
+					variableName = variableName.substring(1);
 				}
-				if (pureName.endsWith("#")) {
-					pureName = pureName.substring(0, pureName.length() - 1);	
-				}		
+				if (variableName.endsWith("#")) {
+					variableName = variableName.substring(0, variableName.length() - 1);
+				}
 				if (paramValue != null) {
 					LOGGER.info("Printed value \"" + paramValue + 
 							"\" of identified output parameter \"" + 
 							field.getName() + "\"");
-					System.out.println(pureName + "=\"" + paramValue + "\"");
+					System.out.println(variableName + "=\"" + paramValue + "\"");
 				}
 			}
 			if (!params.isEmpty()) {
@@ -235,18 +233,26 @@ public class CLI {
 			for (String fieldName : params.keySet()) {
 				if (args.containsKey(fieldName)) {
 					Field field = params.get(fieldName);
+					
 					String argValue = checkNullValue(field, args.get(field.getName()));
 					Object value = ActionHelper.getParamAsOriginalType(field, action, argValue);
 					
 					if (value != null && (field.getType().isPrimitive() || field.getType().equals(value.getClass()))) {
 						field.setAccessible(true);
 						try {
-							field.set(action, value);
+							if (ActionHelper.isPasswordField(field) && field.getType().equals(String.class)) {
+								String decryptedValue = ActionHelper.getDecryptedPassword((String) value);
+								field.set(action, decryptedValue);
+							}
+							else {
+								field.set(action, value);
+							}
 							LOGGER.info("Assigned value \"" + field.getName() + 
 									"\" to identified input parameter \"" + 
-									args.get(field.getName()) + "\"");
+									args.get(field.getName()));
 							System.out.println(field.getName() + "=" +
-									(value != null ? (value.getClass().equals(String.class) ? "\"" + value + "\"" : value) : "NULL"));
+									(value != null ? (value.getClass().equals(String.class) ? "\"" + 
+									value + "\"" : value) : "NULL"));
 						} 
 						catch (IllegalArgumentException | IllegalAccessException e) {
 							LOGGER.warning("Exception: " + e.toString());

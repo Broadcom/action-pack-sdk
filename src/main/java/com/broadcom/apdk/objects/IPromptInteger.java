@@ -2,12 +2,12 @@ package com.broadcom.apdk.objects;
 
 public interface IPromptInteger extends IPrompt<Integer> {
 	
-	public Integer getMinimum();
+	Integer getMinimum();
 	
-	public void setMinimum(Integer minimum);
+	void setMinimum(Integer minimum);
 	
-	public Integer getMaximum();
+	Integer getMaximum();
 	
-	public void setMaximum(Integer maximum);
+	void setMaximum(Integer maximum);
 
 }

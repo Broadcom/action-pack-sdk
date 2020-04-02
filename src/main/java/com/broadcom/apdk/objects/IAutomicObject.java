@@ -2,28 +2,28 @@ package com.broadcom.apdk.objects;
 
 public interface IAutomicObject extends IAutomicContent {
 	
-	public void setName(String name);
+	void setName(String name);
 	
-	public String getName();
+	String getName();
 	
-	public void setTitle(String title);
+	void setTitle(String title);
 	
-	public String getTitle();
+	String getTitle();
 	
-	public void setType(ObjectType type);
+	void setType(ObjectType type);
 	
-	public ObjectType getType();
+	ObjectType getType();
 	
-	public void setArchiveKey1(String archiveKey1);
+	void setArchiveKey1(String archiveKey1);
 	
-	public String getArchiveKey1();
+	String getArchiveKey1();
 	
-	public void setArchiveKey2(String archiveKey2);
+	void setArchiveKey2(String archiveKey2);
 	
-	public String getArchiveKey2();
+	String getArchiveKey2();
 	
-	public void setDocumentation(String documentation);
+	void setDocumentation(String documentation);
 	
-	public String getDocumentation();
+	String getDocumentation();
 	
 }

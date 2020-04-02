@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * this annotation may be used to mark certain fields of the class as input parameters
  * for your action. In addition to primitive data types and their corresponding wrapper 
  * classes and enums the following classes are supported by the framework:
- * <ul><li>{@link java.t.String String}</li>
+ * <ul><li>{@link java.lang.String String}</li>
  * <li>{@link java.time.LocalTime LocalTime}</li>
  * <li>{@link java.time.LocalDate LocalDate}</li>
  * <li>{@link java.time.LocalDateTime LocalDateTime}</li></ul>

@@ -2,28 +2,28 @@ package com.broadcom.apdk.objects;
 
 public interface IJobUnix extends IJob {
 	
-	public void setJobType(JobType jobType);
+	void setJobType(JobType jobType);
 	
-	public JobType getJobType();
+	JobType getJobType();
 	
-	public void setShellOptions(String options);
+	void setShellOptions(String options);
 	
-	public String getShellOptions();
+	String getShellOptions();
 	
-	public void setShell(Shell shell);
+	void setShell(Shell shell);
 	
-	public Shell getShell();
+	Shell getShell();
 	
-	public void setReportToDatabase(Boolean database);
+	void setReportToDatabase(Boolean database);
 	
-	public Boolean getReportToDatabase();
+	Boolean getReportToDatabase();
 	
-	public void setReportToFile(Boolean file);
+	void setReportToFile(Boolean file);
 	
-	public Boolean getReportToFile();
+	Boolean getReportToFile();
 	
-	public void setReportTrigger(Boolean trigger);
+	void setReportTrigger(Boolean trigger);
 	
-	public Boolean getReportTrigger();
+	Boolean getReportTrigger();
 
 }

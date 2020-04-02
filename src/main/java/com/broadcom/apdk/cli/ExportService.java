@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
+import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -221,8 +222,11 @@ class ExportService {
 			    FileWriter writer = new FileWriter(new File(contentXML));
 			    StreamResult result = new StreamResult(writer);
 
-			    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-			    Transformer transformer = transformerFactory.newTransformer();
+			    
+			    TransformerFactory factory = TransformerFactory.newInstance();
+			    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+			    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+			    Transformer transformer = factory.newTransformer();
 			    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 			    transformer.transform(source, result);		
 			    
@@ -279,8 +283,10 @@ class ExportService {
 		    FileWriter writer = new FileWriter(new File(filename));
 		    StreamResult result = new StreamResult(writer);
 
-		    TransformerFactory transformerFactory = TransformerFactory.newInstance();
-		    Transformer transformer = transformerFactory.newTransformer();
+		    TransformerFactory factory = TransformerFactory.newInstance();
+		    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+		    factory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
+		    Transformer transformer = factory.newTransformer();
 		    transformer.setOutputProperty(OutputKeys.INDENT, "yes");
 		    transformer.transform(source, result);
 		    
@@ -302,7 +308,16 @@ class ExportService {
 			for (Field field : fields) {
 				if (field.isAnnotationPresent(ActionInputParam.class)) {
 					ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
-					String variableName = annotation.name().isEmpty() ? "&" + field.getName().toUpperCase() + "#" : annotation.name();
+					String variableName = "&" + field.getName().toUpperCase() + "#";
+					if (!annotation.name().trim().isEmpty()) {
+						variableName = annotation.name().trim().toUpperCase();
+						if (!variableName.startsWith("&")) {
+							variableName = "&" + variableName;
+						}
+						if (!variableName.endsWith("#")) {
+							variableName = variableName + "#";
+						}
+					}
 					String label = annotation.label().isEmpty() ? field.getName() : annotation.label(); 
 					String tooltip = annotation.tooltip(); 
 					String refType = annotation.refType();
@@ -772,13 +787,18 @@ class ExportService {
 				Constructor<?> constructor = jobClass.getConstructor(String.class);
 				IJob job = (IJob) constructor.newInstance(actionName);
 				job.setPreScript(":INCLUDE PCK.ITPA_SHARED.PRV.INCLUDE.PREPARE_JOB");
-				String arguments = String.join(" ", ActionHelper.getArguments(action));
+				String arguments = String.join(" ", ActionHelper.getArguments(action, jobType));
 				String checkCmd = ":INCLUDE PCK.ITPA_SHARED.PRV.INCLUDE.CHECK_CMDLINE_CMD@WINDOWS";
+				String attachITPATool = "";
+				if (ActionHelper.hasPasswordFields(action)) {
+					attachITPATool = ":ATTACH_RES \"PCK.ITPA_SHARED.PRV.STORE\", \"ITPATOOL.JAR\", C, N\n";
+				} 		
 				if (IJobUnix.class.isAssignableFrom(job.getClass())) {
 					checkCmd = ":INCLUDE PCK.ITPA_SHARED.PRV.INCLUDE.CHECK_SHELL_CMD@UNIX";
 				}
 				job.setScript(
 						":ATTACH_RES \"" +  actionPackName + ".PRV.STORE\", \"APJAR\", C, N\n" +
+						attachITPATool +
 						checkCmd + "\n" +
 						":INCLUDE PCK.ITPA_SHARED.PRV.INCLUDE.CHANGE_DIRECTORY_TO_AGENT_BIN\n" +
 						":JCL_CONCAT_CHAR \"?\"\n" + 

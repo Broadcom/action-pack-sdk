@@ -4,16 +4,16 @@ import java.util.List;
 
 public interface IAutomicContentFolder extends IAutomicContent {
 	
-	public String getName();
+	String getName();
 	
-	public void setName(String name);
+	void setName(String name);
 	
-	public String getTitle();
+	String getTitle();
 	
-	public void setTitle(String name);
+	void setTitle(String name);
 
-	public List<IAutomicContent> getObjects();
+	List<IAutomicContent> getObjects();
 	
-	public void setObjects(List<IAutomicContent> objects);
+	void setObjects(List<IAutomicContent> objects);
 	
 }

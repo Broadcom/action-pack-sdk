@@ -2,18 +2,18 @@ package com.broadcom.apdk.api;
 
 public interface IAction {
 	
-	public String getName();
+	String getName();
 
-	public void setName(String name);
+	void setName(String name);
 	
-	public String getTitle();
+	String getTitle();
 
-	public void setTitle(String title);
+	void setTitle(String title);
 	
-	public String getPath();
+	String getPath();
 	
-	public void setPath(String path);
+	void setPath(String path);
 	
-	public void run();
+	void run();
 
 }

@@ -4,18 +4,18 @@ import java.util.List;
 
 public interface IVariable extends IAutomicObject {
 	
-	public void setSortColumn(Integer sortColumn);
+	void setSortColumn(Integer sortColumn);
 	
-	public Integer getSortColumn();
+	Integer getSortColumn();
 	
-	public void setSortDirection(SortDirection sortDirection);
+	void setSortDirection(SortDirection sortDirection);
 	
-	public SortDirection getSortDirection();
+	SortDirection getSortDirection();
 	
-	public void setIfKeyNotFoundAction(KeyNotFoundAction action); 
+	void setIfKeyNotFoundAction(KeyNotFoundAction action); 
 	
-	public KeyNotFoundAction getKeyNotFoundAction();
+	KeyNotFoundAction getKeyNotFoundAction();
 	
-    public <T> List<KeyValueGroup<T>> getValues();
+    <T> List<KeyValueGroup<T>> getValues();
 	
 }

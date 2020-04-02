@@ -2,14 +2,14 @@ package com.broadcom.apdk.objects;
 
 public interface IVariableNumber extends IVariable {
 	
-	public String getDataTypeName();
+	String getDataTypeName();
 	
-	public void limitTextLength(Boolean flag);
+	void limitTextLength(Boolean flag);
 	
-	public Boolean isTextLengthLimited();
+	Boolean isTextLengthLimited();
 	
-	public void forceUpperCase(Boolean flag);
+	void forceUpperCase(Boolean flag);
 	
-	public Boolean isUpperCaseForced();
+	Boolean isUpperCaseForced();
 
 }

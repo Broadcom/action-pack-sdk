@@ -1,10 +1,16 @@
 package com.broadcom.apdk.helpers;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.net.URISyntaxException;
+import java.nio.file.Path;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -27,24 +33,114 @@ public class ActionHelper {
 	
 	private final static Logger LOGGER = Logger.getLogger("APDK");
 	
-	public static String[] getArguments(IAction action) {
+	public static boolean hasPasswordFields(IAction action) {
+		Class<? extends IAction> actionClass = action.getClass();
+		if (actionClass != null) {
+			Map<String, Field> inputParams = ActionHelper.getActionInputParams(action);
+			for (String paramName : inputParams.keySet()) {
+				Field field = inputParams.get(paramName);
+				if (isPasswordField(field)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
+	public static String getDecryptedPassword(String encrptedPassword) {
+		ProcessBuilder processBuilder = new ProcessBuilder();
+		String decrpytedPassword = encrptedPassword;
+		File itpaTool = null;
+		try {
+			Path jarFile = new File(ActionHelper.class.getProtectionDomain().
+					getCodeSource().getLocation().toURI()).toPath();
+			String folder = jarFile.toString().substring(0, 
+					jarFile.toString().length() - jarFile.getFileName().toString().length());
+			itpaTool = new File(folder + "itpa-tool.jar");
+		} 
+		catch (URISyntaxException e1) {
+			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encrptedPassword + "\"");
+		}
+		
+		if (itpaTool != null && itpaTool.isFile() && itpaTool.exists()) {
+			LOGGER.info("Found \"itpa-tool.jar\" to decrypt \"" + encrptedPassword + "\"");	
+			String shell = "bash";
+			String shellArg = "-c";		
+			if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
+				shell = "cmd.exe";
+				shellArg = "/c";					
+			}
+			String command = "java -jar \"" + itpaTool.toPath() + 
+					"\" ARB -cmd cipher decrypt \"" + encrptedPassword + "\"";
+			processBuilder.command(shell, shellArg, command);
+			try {
+				Process process = processBuilder.start();
+				StringBuilder output = new StringBuilder();
+				BufferedReader reader = new BufferedReader(
+						new InputStreamReader(process.getInputStream()));
+
+				String line;
+				while ((line = reader.readLine()) != null) {
+					if (line.startsWith("Decrypted: ") && line.length() > 11) {
+						decrpytedPassword = line.substring(11);	
+						LOGGER.info("Successfully decrypted \"" + encrptedPassword + "\"");	
+					}
+					output.append(line + "\n");
+				}
+
+				int exitVal = process.waitFor();
+				if (exitVal != 0) {
+					LOGGER.info("Executing \"itpa-tool.jar\" caused an error");	
+				} 
+			} 
+			catch (IOException e) {
+				LOGGER.warning("Exception: " + e.toString());	
+			} 
+			catch (InterruptedException e) {
+				LOGGER.warning("Exception: " + e.toString());	
+			}
+		}
+		else {
+			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encrptedPassword + "\"");
+		}
+		return decrpytedPassword;
+	}
+	
+	public static List<Field> getPasswordFields(IAction action) {
+		List<Field> passwordFields = new ArrayList<Field>();
+		Class<? extends IAction> actionClass = action.getClass();
+		if (actionClass != null) {
+			Map<String, Field> inputParams = ActionHelper.getActionInputParams(action);
+			for (String paramName : inputParams.keySet()) {
+				Field field = inputParams.get(paramName);
+				if (isPasswordField(field)) {
+					passwordFields.add(field);
+				}
+			}
+		}
+		return passwordFields;
+	}
+	
+	public static String[] getArguments(IAction action, Class<?> osType) {
 		List<String> arguments = new ArrayList<String>();
 		Class<? extends IAction> actionClass = action.getClass();
 		if (actionClass != null) {
 			Map<String, Field> inputParams = ActionHelper.getActionInputParams(action);
 			for (String paramName : inputParams.keySet()) {
 				Field field = inputParams.get(paramName);
-				String variableName = "&" + field.getName().toUpperCase() + "#";
-				if (field != null && field.isAnnotationPresent(ActionInputParam.class)) {
-					ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
-					if (!annotation.name().isEmpty()) {
-						variableName = annotation.name();	
-					}
-				}
+				String variableName = ActionHelper.getVariableNameFromParam(field, ActionInputParam.class);
 				arguments.add(paramName + "=\"" + variableName + "\"");
 			}
 		}
 		return arguments.toArray(new String[arguments.size()]);
+	}
+	
+	public static boolean isPasswordField(Field field) {
+		ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
+		if (annotation != null && annotation.password()) {
+			return true;
+		}
+		return false;
 	}
 	
 	public static String getParamAsString(Field field, IAction action) {
@@ -224,8 +320,15 @@ public class ActionHelper {
 		try {
 			Method nameMethod = annotation.getClass().getDeclaredMethod("name", new Class<?>[0]);
 			String value = (String) nameMethod.invoke(annotation);
-			if (!value.isEmpty()) {
-				return value;
+			if (!value.trim().isEmpty()) {
+				value = value.trim().toUpperCase();
+				if (!value.startsWith("&")) {
+					value = "&" + value;
+				}
+				if (!value.endsWith("#")) {
+					value = value + "#";
+				}
+				return value; 
 			}
 		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | 
 				IllegalArgumentException | InvocationTargetException e) {

@@ -4,8 +4,8 @@ import java.util.List;
 
 public interface IStorage extends IAutomicObject {
 	
-	public List<StoredFile> getStoredFiles();
+	List<StoredFile> getStoredFiles();
 
-	public void setStoredFiles(List<StoredFile> storedFiles);
+	void setStoredFiles(List<StoredFile> storedFiles);
 
 }

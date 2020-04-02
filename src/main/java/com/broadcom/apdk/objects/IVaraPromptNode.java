@@ -2,14 +2,14 @@ package com.broadcom.apdk.objects;
 
 public interface IVaraPromptNode {
 	
-	public String getName();
+	String getName();
 	
-	public Boolean isContent();
+	Boolean isContent();
 	
-	public String getId();
+	String getId();
 	
-	public String getParent();
+	String getParent();
 	
-	public String getType();
+	String getType();
 
 }

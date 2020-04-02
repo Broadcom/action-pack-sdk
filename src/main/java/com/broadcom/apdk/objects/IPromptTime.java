@@ -4,12 +4,12 @@ import java.time.LocalTime;
 
 public interface IPromptTime extends IPrompt<LocalTime> {
 	
-	public void setMinimum(String minimum);
+	void setMinimum(String minimum);
 	
-	public String getMinimum();
+	String getMinimum();
 	
-	public void setMaximum(String maximum);
+	void setMaximum(String maximum);
 	
-	public String getMaximum();
+	String getMaximum();
 
 }

@@ -2,55 +2,55 @@ package com.broadcom.apdk.api;
 
 public interface IActionPack {
 
-	public String getName();
+	String getName();
 
-	public void setName(String name);
+	void setName(String name);
 
-	public String getBuildNumber();
+	String getBuildNumber();
 
-	public void setBuildNumber(String buildNumber);
+	void setBuildNumber(String buildNumber);
 
-	public String getCategory();
+	String getCategory();
 
-	public void setCategory(String category);
+	void setCategory(String category);
 
-	public String getCompany();
+	String getCompany();
 
-	public void setCompany(String company);
+	void setCompany(String company);
 
-	public String getDependencies();
+	String getDependencies();
 
-	public void setDependencies(String dependencies);
+	void setDependencies(String dependencies);
 
-	public String getDescription();
+	String getDescription();
 
-	public void setDescription(String description);
+	void setDescription(String description);
 
-	public String getHomepage();
+	String getHomepage();
 
-	public void setHomepage(String homepage);
+	void setHomepage(String homepage);
 
-	public String getLicense();
+	String getLicense();
 
-	public void setLicense(String license);
+	void setLicense(String license);
 
-	public String getPackageFormatVersion();
+	String getPackageFormatVersion();
 
-	public void setPackageFormatVersion(String packageFormatVersion);
+	void setPackageFormatVersion(String packageFormatVersion);
 
-	public String getTitle();
+	String getTitle();
 
-	public void setTitle(String title);
+	void setTitle(String title);
 
-	public String getVersion();
+	String getVersion();
 
-	public void setVersion(String version);
+	void setVersion(String version);
 	
-	public String getDocumentation();
+	String getDocumentation();
 	
-	public void setDocumentation(String documentation);
+	void setDocumentation(String documentation);
 	
-	public String getLicenses();
+	String getLicenses();
 
-	public void setLicenses(String licenses);
+	void setLicenses(String licenses);
 }

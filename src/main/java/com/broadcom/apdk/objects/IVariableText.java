@@ -2,18 +2,18 @@ package com.broadcom.apdk.objects;
 
 public interface IVariableText extends IVariable {
 	
-	public String getDataTypeName();
+	String getDataTypeName();
 	
-	public void limitTextLength(Boolean limitTextLength);
+	void limitTextLength(Boolean limitTextLength);
 	
-	public Boolean isTextLengthLimited();
+	Boolean isTextLengthLimited();
 	
-	public void setMaxTextLength(Integer maxTextLength);
+	void setMaxTextLength(Integer maxTextLength);
 	
-	public Integer getMaxTextLength();
+	Integer getMaxTextLength();
 	
-	public void forceUpperCase(Boolean forceUpperCase);
+	void forceUpperCase(Boolean forceUpperCase);
 	
-	public Boolean isUpperCaseForced();
+	Boolean isUpperCaseForced();
 
 }

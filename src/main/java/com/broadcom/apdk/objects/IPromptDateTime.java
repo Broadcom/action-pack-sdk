@@ -4,16 +4,16 @@ import java.time.LocalDateTime;
 
 public interface IPromptDateTime extends IPrompt<LocalDateTime> {
 	
-	public void setMinimum(String minimum);
+	void setMinimum(String minimum);
 	
-	public String getMinimum();
+	String getMinimum();
 	
-	public void setMaximum(String maximum);
+	void setMaximum(String maximum);
 	
-	public String getMaximum();
+	String getMaximum();
 	
-	public void setCalendar(String calendar);
+	void setCalendar(String calendar);
 	
-	public String getCalendar();
+	String getCalendar();
 
 }

@@ -4,144 +4,144 @@ import java.util.List;
 
 public interface IExecutableAutomicObject extends IAutomicObject {
 	
-	public void setScript(String script);
+	void setScript(String script);
 	
-	public String getScript();
+	String getScript();
 	
-	public void setQueue(String queue);
+	void setQueue(String queue);
 	
-	public String getQueue();
+	String getQueue();
 	
-	public void setErrorFreeStatus(String status);
+	void setErrorFreeStatus(String status);
 	
-	public String getErrorFreeStatus();
+	String getErrorFreeStatus();
 	
-	public void setDeactivationDelay(Integer delay);
+	void setDeactivationDelay(Integer delay);
 	
-	public Integer getDeactivationDelay();
+	Integer getDeactivationDelay();
 	
-	public void setDeactivateOnFinish(DeactivationOnFinish deactivationOnFinish);
+	void setDeactivateOnFinish(DeactivationOnFinish deactivationOnFinish);
 	
-	public DeactivationOnFinish getDeactivateOnFinish();
+	DeactivationOnFinish getDeactivateOnFinish();
 	
-	public void setMaxSimultaneousExec(Integer maxExecutions);
+	void setMaxSimultaneousExec(Integer maxExecutions);
 	
-	public Integer getMaxSimultaneousExec();
+	Integer getMaxSimultaneousExec();
 	
-	public void setPriority(Integer priority);
+	void setPriority(Integer priority);
 	
-	public Integer getPriority();
+	Integer getPriority();
 	
-	public void setTimezone(String timezoneObjectName);
+	void setTimezone(String timezoneObjectName);
 	
-	public String getTimezone();
+	String getTimezone();
 	
-	public void setGenerateAtRuntime(Boolean generateAtRuntime);
+	void setGenerateAtRuntime(Boolean generateAtRuntime);
 	
-	public Boolean getGenerateAtRuntime();
+	Boolean getGenerateAtRuntime();
 	
-	public void setWaitForRemainingTasks(Boolean waitForRemainingTasks);
+	void setWaitForRemainingTasks(Boolean waitForRemainingTasks);
 	
-	public Boolean isWaitForRemainingTasks();
+	Boolean isWaitForRemainingTasks();
 	
-	public void setJobGroup(String jobGroup);
+	void setJobGroup(String jobGroup);
 	
-	public String getJobGroup();
+	String getJobGroup();
 	
-	public void setVariables(List<VariableEntry> variables);
+	void setVariables(List<VariableEntry> variables);
 	
-	public List<VariableEntry> getVariables();
+	List<VariableEntry> getVariables();
 	
-	public void setPromptSets(List<IPromptSet> promptSets);
+	void setPromptSets(List<IPromptSet> promptSets);
 	
-	public List<IPromptSet> getPromptSets();
+	List<IPromptSet> getPromptSets();
 
-	public void setMaxReturnCode(Integer maxReturnCode);
+	void setMaxReturnCode(Integer maxReturnCode);
 	
-	public Integer getMaxReturnCode();
+	Integer getMaxReturnCode();
 	
-	public void setExecuteObjectIfAboveMaxReturnCode(String objectName);
+	void setExecuteObjectIfAboveMaxReturnCode(String objectName);
 	
-	public String getExecuteObjectIfAboveMaxReturnCode();
+	String getExecuteObjectIfAboveMaxReturnCode();
 	
-	public void setERTMethod(ERTMethod method);
+	void setERTMethod(ERTMethod method);
 	
-	public ERTMethod getERTMethod();
+	ERTMethod getERTMethod();
 	
-	public void setERT(Integer seconds);
+	void setERT(Integer seconds);
 	
-	public Integer getERT();
+	Integer getERT();
 	
-	public void setFixedERT(Integer seconds);
+	void setFixedERT(Integer seconds);
 	
-	public Integer getFixedERT();
+	Integer getFixedERT();
 	
-	public void setERTNumberOfPastRuns(Integer numberOfPastRuns);
+	void setERTNumberOfPastRuns(Integer numberOfPastRuns);
 	
-	public Integer getERTNumberOfPastRuns();
+	Integer getERTNumberOfPastRuns();
 	
-	public void setERTCorrection(Integer correction);
+	void setERTCorrection(Integer correction);
 	
-	public Integer getERTCorrection();
+	Integer getERTCorrection();
 	
-	public void setERTIgnoreDeviations(Boolean ignoreDeviations);
+	void setERTIgnoreDeviations(Boolean ignoreDeviations);
 	
-	public Boolean isERTIgnoreDeviations();
+	Boolean isERTIgnoreDeviations();
 	
-	public void setERTDeviationExtent(Integer deviationExntent);
+	void setERTDeviationExtent(Integer deviationExntent);
 	
-	public Integer getERTDeviationExtent();
+	Integer getERTDeviationExtent();
 	
-	public void setERTMinimumRuns(Integer minimumRuns);
+	void setERTMinimumRuns(Integer minimumRuns);
 	
-	public Integer getERTMinimumRuns();
+	Integer getERTMinimumRuns();
 	
-	public void setForecastEndStatus(String status);
+	void setForecastEndStatus(String status);
 	
-	public String getForecastEndStatus();
+	String getForecastEndStatus();
 	
-	public void setSRTMethod(SRTMethod method);
+	void setSRTMethod(SRTMethod method);
 	
-	public SRTMethod getSRTMethod();
+	SRTMethod getSRTMethod();
 	
-	public void setSRTERT(Integer negativeDuration);
+	void setSRTERT(Integer negativeDuration);
 	
-	public Integer getSRTERT();
+	Integer getSRTERT();
 	
-	public void setFixedSRT(Integer seconds);
+	void setFixedSRT(Integer seconds);
 	
-	public Integer getFixedSRT();
+	Integer getFixedSRT();
 	
-	public void setExecuteObjectIfRuntimDeviation(String objectName);
+	void setExecuteObjectIfRuntimDeviation(String objectName);
 	
-	public String getExecuteObjectIfRuntimDeviation();
+	String getExecuteObjectIfRuntimDeviation();
 	
-	public void setCancelIfRuntimDeviation(Boolean cancel);
+	void setCancelIfRuntimDeviation(Boolean cancel);
 	
-	public Boolean isCancelIfRuntimDeviation();
+	Boolean isCancelIfRuntimDeviation();
 	
-	public void setMRTMethod(MRTMethod method);
+	void setMRTMethod(MRTMethod method);
 	
-	public MRTMethod getMRTMethod();
+	MRTMethod getMRTMethod();
 	
-	public void setFixedDuration(Integer duration);
+	void setFixedDuration(Integer duration);
 	
-	public Integer getFixedDuration();
+	Integer getFixedDuration();
 	
-	public void setAdditionalDuration(Integer duration);
+	void setAdditionalDuration(Integer duration);
 	
-	public Integer getAdditionalDuration();
+	Integer getAdditionalDuration();
 	
-	public void setAdditionalDurationDays(Integer days);
+	void setAdditionalDurationDays(Integer days);
 	
-	public Integer getAdditionalDurationDays();
+	Integer getAdditionalDurationDays();
 	
-	public void setFinishTime(String hhmm);
+	void setFinishTime(String hhmm);
 	
-	public String getFinishTime();
+	String getFinishTime();
 	
-	public void setFinishTimeTZ(String timezone);
+	void setFinishTimeTZ(String timezone);
 	
-	public String getFinishTimeTZ();
+	String getFinishTimeTZ();
 	
 }

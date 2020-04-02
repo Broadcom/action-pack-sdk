@@ -2,42 +2,42 @@ package com.broadcom.apdk.objects;
 
 public interface IPrompt<T> {
 
-	public void setDataReference(String dataReference);
+	void setDataReference(String dataReference);
 	
-	public String getDataReference();
+	String getDataReference();
 	
-	public void setLabel(String label);
+	void setLabel(String label);
 	
-	public String getLabel();
+	String getLabel();
 	
-	public void setVariableName(String variableName);
+	void setVariableName(String variableName);
 	
-	public String getVariableName();
+	String getVariableName();
 	
-	public void setTooltip(String tooltip);
+	void setTooltip(String tooltip);
 	
-	public String getTooltip();
+	String getTooltip();
 	
-	public void setReadOnly(Boolean readonly);
+	void setReadOnly(Boolean readonly);
 	
-	public Boolean getReadOnly();
+	Boolean getReadOnly();
 	
-	public void setFocus(Boolean focus);
+	void setFocus(Boolean focus);
 	
-	public Boolean getFocus();
+	Boolean getFocus();
 	
-	public void setCustomField(String customField);
+	void setCustomField(String customField);
 	
-	public String getCustomField();
+	String getCustomField();
 	
-	public void setPromptSetName(String promptSetName);
+	void setPromptSetName(String promptSetName);
 	
-	public String getPromptSetName();
+	String getPromptSetName();
 	
-	public void setValue(T value);
+	void setValue(T value);
 	
-	public T getValue();
+	T getValue();
 	
-	public String getValueAsString();
+	String getValueAsString();
 	
 }

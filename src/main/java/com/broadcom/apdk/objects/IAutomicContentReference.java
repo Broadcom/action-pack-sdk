@@ -2,12 +2,12 @@ package com.broadcom.apdk.objects;
 
 public interface IAutomicContentReference extends IAutomicContent {
 
-	public String getName();
+	String getName();
 	
-	public void setName(String name);
+	void setName(String name);
 	
-	public Boolean isLink();
+	Boolean isLink();
 
-	public void setLink(Boolean isLink);
+	void setLink(Boolean isLink);
 	
 }

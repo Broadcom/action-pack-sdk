@@ -2,40 +2,40 @@ package com.broadcom.apdk.objects;
 
 public interface IJobWindows extends IJob {
 	
-	public void setWorkingDirectory(String directory);
+	void setWorkingDirectory(String directory);
 	
-	public String getWorkingDirectory();
+	String getWorkingDirectory();
 	
-	public void setInterpreterType(InterpreterType type);
+	void setInterpreterType(InterpreterType type);
 	
-	public InterpreterType getInterpreterType();
+	InterpreterType getInterpreterType();
 	
-	public void setLogonAsBatchUser(Boolean logonAsBatchUser);
+	void setLogonAsBatchUser(Boolean logonAsBatchUser);
 	
-	public Boolean getLogonAsBatchUser();
+	Boolean getLogonAsBatchUser();
 	
-	public void setScriptedReport(Boolean scriptedReport);
+	void setScriptedReport(Boolean scriptedReport);
 	
-	public Boolean getScriptedReport();
+	Boolean getScriptedReport();
 	
-	public void setUseWinOsJobObject(UseWinOsJobObject useWinOsJobObject);
+	void setUseWinOsJobObject(UseWinOsJobObject useWinOsJobObject);
 	
-	public UseWinOsJobObject getUseWinOsJobObject();
+	UseWinOsJobObject getUseWinOsJobObject();
 	
-	public void setViewJobOnDesktop(ViewJobOnDesktop view);
+	void setViewJobOnDesktop(ViewJobOnDesktop view);
 	
-	public ViewJobOnDesktop getViewJobOnDesktop();
+	ViewJobOnDesktop getViewJobOnDesktop();
 	
-	public void setReportToDatabase(Boolean database);
+	void setReportToDatabase(Boolean database);
 	
-	public Boolean getReportToDatabase();
+	Boolean getReportToDatabase();
 	
-	public void setReportToFile(Boolean file);
+	void setReportToFile(Boolean file);
 	
-	public Boolean getReportToFile();
+	Boolean getReportToFile();
 	
-	public void setReportTrigger(Boolean trigger);
+	void setReportTrigger(Boolean trigger);
 	
-	public Boolean getReportTrigger();
+	Boolean getReportTrigger();
 	
 }

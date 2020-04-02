@@ -4,36 +4,36 @@ import java.util.List;
 
 public interface IWorkflow extends IExecutableAutomicObject {
 
-	public void setScript(String script);
+	void setScript(String script);
 	
-	public String getScript();
+	String getScript();
 	
-	public void setInternalAccount(String internalAccount);
+	void setInternalAccount(String internalAccount);
 	
-	public String getInternalAccount();
+	String getInternalAccount();
 	
-	public void setExtendedReport(ExtendedReport extendedReport);
+	void setExtendedReport(ExtendedReport extendedReport);
 	
-	public ExtendedReport getExtendedReport();
+	ExtendedReport getExtendedReport();
 	
-	public void setResultEvalOkStatus(String okStatus);
+	void setResultEvalOkStatus(String okStatus);
 	
-	public String getResultEvalOkStatus();
+	String getResultEvalOkStatus();
 	
-	public void setResultEvalExecIfNotOk(String executableObjectName);
+	void setResultEvalExecIfNotOk(String executableObjectName);
 	
-	public String getResultEvalExecIfNotOk();
+	String getResultEvalExecIfNotOk();
 	
-	public void setPassPriority(Boolean passPriority);
+	void setPassPriority(Boolean passPriority);
 	
-	public Boolean isPassPriority();
+	Boolean isPassPriority();
 	
-	public void setChildQueue(String childQueue);
+	void setChildQueue(String childQueue);
 	
-	public String getChildQueue();
+	String getChildQueue();
 	
-	public void setTasks(List<IWorkflowTask> tasks);
+	void setTasks(List<IWorkflowTask> tasks);
 	
-	public List<IWorkflowTask> getTasks();
+	List<IWorkflowTask> getTasks();
 	
 }
