@@ -47,9 +47,9 @@ public class ActionHelper {
 		return false;
 	}
 	
-	public static String getDecryptedPassword(String encrptedPassword) {
+	public static String getDecryptedPassword(String encryptedPassword) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
-		String decrpytedPassword = encrptedPassword;
+		String decrpytedPassword = encryptedPassword;
 		File itpaTool = null;
 		try {
 			Path jarFile = new File(ActionHelper.class.getProtectionDomain().
@@ -59,11 +59,11 @@ public class ActionHelper {
 			itpaTool = new File(folder + "itpa-tool.jar");
 		} 
 		catch (URISyntaxException e1) {
-			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encrptedPassword + "\"");
+			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encryptedPassword + "\"");
 		}
 		
 		if (itpaTool != null && itpaTool.isFile() && itpaTool.exists()) {
-			LOGGER.info("Found \"itpa-tool.jar\" to decrypt \"" + encrptedPassword + "\"");	
+			LOGGER.info("Found \"itpa-tool.jar\" to decrypt \"" + encryptedPassword + "\"");	
 			String shell = "bash";
 			String shellArg = "-c";		
 			if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
@@ -71,7 +71,7 @@ public class ActionHelper {
 				shellArg = "/c";					
 			}
 			String command = "java -jar \"" + itpaTool.toPath() + 
-					"\" ARB -cmd cipher decrypt \"" + encrptedPassword + "\"";
+					"\" ARB -cmd cipher decrypt \"" + encryptedPassword + "\"";
 			processBuilder.command(shell, shellArg, command);
 			try {
 				Process process = processBuilder.start();
@@ -83,7 +83,7 @@ public class ActionHelper {
 				while ((line = reader.readLine()) != null) {
 					if (line.startsWith("Decrypted: ") && line.length() > 11) {
 						decrpytedPassword = line.substring(11);	
-						LOGGER.info("Successfully decrypted \"" + encrptedPassword + "\"");	
+						LOGGER.info("Successfully decrypted \"" + encryptedPassword + "\"");	
 					}
 					output.append(line + "\n");
 				}
@@ -101,7 +101,7 @@ public class ActionHelper {
 			}
 		}
 		else {
-			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encrptedPassword + "\"");
+			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encryptedPassword + "\"");
 		}
 		return decrpytedPassword;
 	}
