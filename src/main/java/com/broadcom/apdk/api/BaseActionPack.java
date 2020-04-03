@@ -73,8 +73,6 @@ public abstract class BaseActionPack implements IActionPack {
 					actionPackAnnotation.category() : null);
 			setPackageFormatVersion(!actionPackAnnotation.packageFormatVersion().isEmpty() ? 
 					actionPackAnnotation.packageFormatVersion() : "0.3.0");
-			setName(!actionPackAnnotation.name().isEmpty() ? 
-					actionPackAnnotation.name() : null);
 		}	
 		else {
 			setName("PCK.CUSTOM_" + getClass().getSimpleName().toUpperCase());
