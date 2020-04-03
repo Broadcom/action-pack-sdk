@@ -31,10 +31,10 @@ public @interface ActionInputParam {
 	
 	public String refType() default "STATIC";	
 	
-	public String dataReference() default "";	
+	public String dataReference() default "";
 	
 	public boolean password() default false;
-	
-	
+
+	public String cdaMapping() default "";	
 
 }

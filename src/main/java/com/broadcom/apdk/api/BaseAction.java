@@ -59,9 +59,13 @@ public abstract class BaseAction implements IAction {
 	public BaseAction() {
 		Action actionAnnotation = this.getClass().getAnnotation(Action.class);
 		if (actionAnnotation != null) {
-			setName(actionAnnotation.name());
-			setTitle(actionAnnotation.title());
-			setPath(actionAnnotation.path());
+			setName(!actionAnnotation.name().isEmpty() ? 
+					actionAnnotation.name() : 
+					getClass().getSimpleName().toUpperCase());
+			setTitle(!actionAnnotation.title().isEmpty() ? 
+					actionAnnotation.title() : null);
+			setPath(!actionAnnotation.path().isEmpty() ? 
+					actionAnnotation.path() : null);
 		}
 		else {
 			setName(getClass().getSimpleName().toUpperCase());

@@ -177,7 +177,7 @@ class ExportService {
 			VariableText metaDataVARA = getMetaDataVARA(actionPack);
 			LOGGER.info("Create object \"" + metaDataVARA.getName() + "\"");
 			rootFolder = (Folder) FolderHelper.insertObject(rootFolder, null, metaDataVARA);
-			rootFolder = (Folder) FolderHelper.insertObject(rootFolder, "CONFIG", getPromptExternalMapVARA(actionPack));
+			rootFolder = (Folder) FolderHelper.insertObject(rootFolder, "CONFIG", getPromptExternalMapVARA(actionPack, actions));
 			export(metaDataVARA, destinationFolder);
 			files.put(Paths.get(metaDataVARA.getName() + ".xml"), "");
 			
@@ -540,9 +540,17 @@ class ExportService {
 		return docu;		
 	}
 	
-	private VariableText getPromptExternalMapVARA(IActionPack actionPack) {
+	private VariableText getPromptExternalMapVARA(IActionPack actionPack, List<IAction> actions) {
 		String actionPackName = toValidName(getActionPackName(actionPack));
 		VariableText vara = new VariableText(actionPackName + ".PUB.PROMPT_EXTERNAL_MAP");
+		Map<String, String> mappings = ActionHelper.getCDAMappings(actions); 
+		if (!mappings.isEmpty()) {
+			List<KeyValueGroup<String>> values = new ArrayList<KeyValueGroup<String>>();
+			for (String key : mappings.keySet()) {
+				values.add(new KeyValueGroup<String>(actionPackName + ".PUB.ACTION." + key, mappings.get(key)));
+			}
+			vara.setValues(values);
+		}
 		return vara;
 	}
 	

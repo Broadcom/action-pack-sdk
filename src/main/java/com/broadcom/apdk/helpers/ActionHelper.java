@@ -337,6 +337,37 @@ public class ActionHelper {
 		return "&" + field.getName().toUpperCase() + "#";
 	}
 	
+	public static Map<String, String> getCDAMappings(List<IAction> actions) {
+		Map<String, String> mappings = new HashMap<String, String>();
+		for (IAction action : actions) {
+			Map<String, Field> inputParams = getActionInputParams(action);	
+			for (String fieldName : inputParams.keySet()) {
+				Field field = inputParams.get(fieldName);
+				ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
+				if (!annotation.cdaMapping().isEmpty()) {
+					String key = action.getName() != null ? 
+							action.getName().toUpperCase() : 
+							action.getClass().getSimpleName().toUpperCase();
+					String paramName = field.getName().toUpperCase() + "#";
+					if (!annotation.name().isEmpty()) {
+						paramName = annotation.name();
+						if (paramName.startsWith("&")) {
+							paramName = paramName.substring(1);
+						}
+						if (!paramName.endsWith("#")) {
+							paramName += "#";
+						}
+					}
+					key += "/" + paramName;
+					LOGGER.info("Found CDA mapping for \"" + key + 
+							"\": \"" + annotation.cdaMapping() + "\"");
+					mappings.put(key, annotation.cdaMapping());
+				}
+			}
+		}
+		return mappings;
+	}
+	
 	public static Map<String, Field> getActionOutputParams(IAction action) {
 		return getActionParams(action.getClass(), ActionOutputParam.class);
 	}

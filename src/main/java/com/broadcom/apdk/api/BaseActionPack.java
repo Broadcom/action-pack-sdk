@@ -56,7 +56,7 @@ public abstract class BaseActionPack implements IActionPack {
 					actionPackAnnotation.name() : 
 					"PCK.CUSTOM_" + getClass().getSimpleName().toUpperCase());
 			setTitle(!actionPackAnnotation.title().isEmpty() ? 
-					actionPackAnnotation.name() : null);
+					actionPackAnnotation.title() : null);
 			setBuildNumber(!actionPackAnnotation.buildNumber().isEmpty() ? 
 					actionPackAnnotation.buildNumber() : null);
 			setCompany(!actionPackAnnotation.company().isEmpty() ? 
