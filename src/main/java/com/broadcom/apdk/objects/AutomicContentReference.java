@@ -5,7 +5,7 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 public class AutomicContentReference implements IAutomicContentReference {
 	
-	private Boolean link = new Boolean(false);
+	private Boolean link = false;
 	private String name;
 	
 	public AutomicContentReference() {}

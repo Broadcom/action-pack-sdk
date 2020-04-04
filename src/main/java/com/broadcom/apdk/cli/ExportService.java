@@ -425,10 +425,11 @@ class ExportService {
 	private String getActionName(Class<? extends IAction> actionClass) {
 		if (actionClass != null) {
 			try {
-				IAction action = (IAction) actionClass.newInstance();
+				IAction action = (IAction) actionClass.getDeclaredConstructor().newInstance();
 				return action.getName().toUpperCase();
 			} 
-			catch (InstantiationException | IllegalAccessException e) {} 
+			catch (InstantiationException | IllegalAccessException | IllegalArgumentException | 
+					InvocationTargetException | NoSuchMethodException | SecurityException e) {} 
 			return actionClass.getSimpleName().toUpperCase();
 		}
 		return null;

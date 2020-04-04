@@ -2,6 +2,7 @@ package com.broadcom.apdk.cli;
 
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.net.URLClassLoader;
 import java.nio.file.Path;
@@ -78,7 +79,7 @@ public class CLI {
 					actionPackClassName = actionPackClassName.trim();
 					ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 					Class<?> actionPackClass = classLoader.loadClass(actionPackClassName);			
-					IActionPack actionPack = (IActionPack) actionPackClass.newInstance();
+					IActionPack actionPack = (IActionPack) actionPackClass.getDeclaredConstructor().newInstance();
 					if (actionPack != null && actionPack.getName() != null) {
 						System.out.println("[ActionPack] " + actionPackClass.getName() + " (" + actionPack.getName() + ")");	
 					}
@@ -94,7 +95,9 @@ public class CLI {
 					}
 				}
 			}
-			catch (IOException | InstantiationException | IllegalAccessException | ClassNotFoundException e) {
+			catch (IOException | InstantiationException | IllegalAccessException | 
+					ClassNotFoundException | IllegalArgumentException | InvocationTargetException | 
+					NoSuchMethodException | SecurityException e) {
 				System.out.println("ERROR: " + e.toString());
 			} 
 		}
@@ -120,7 +123,7 @@ public class CLI {
 					actionPackClassName = actionPackClassName.trim();
 					ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 					Class<?> actionPackClass = classLoader.loadClass(actionPackClassName);	
-					IActionPack actionPack = (IActionPack) actionPackClass.newInstance();	
+					IActionPack actionPack = (IActionPack) actionPackClass.getDeclaredConstructor().newInstance();	
 					
 					List<Class<? extends IAction>> allActions = getActionsOnClassPath();
 					List<Class<? extends IAction>> actionClasses = getActions(actionPack, allActions);
@@ -130,7 +133,7 @@ public class CLI {
 					
 					List<IAction> actions = new ArrayList<IAction>();
 					for (Class<? extends IAction> actionClass : actionClasses) {
-						IAction action = (IAction) actionClass.newInstance();		
+						IAction action = (IAction) actionClass.getDeclaredConstructor().newInstance();		
 						actions.add(action);
 					}
 					
@@ -143,7 +146,9 @@ public class CLI {
 				}
 
 			} 
-			catch (IOException | ExportException | IllegalAccessException | InstantiationException | ClassNotFoundException e) {
+			catch (IOException | ExportException | IllegalAccessException | InstantiationException | 
+					ClassNotFoundException | IllegalArgumentException | InvocationTargetException | 
+					NoSuchMethodException | SecurityException e) {
 				LOGGER.severe("Export failed: " + e.toString());
 			} 
 		}
@@ -160,13 +165,15 @@ public class CLI {
 					
 					if (IAction.class.isAssignableFrom(actionClass) &&
 							!actionClass.isInterface() && !Modifier.isAbstract(actionClass.getModifiers())) {
-						IAction action = (IAction) actionClass.newInstance();	
+						IAction action = (IAction) actionClass.getDeclaredConstructor().newInstance();	
 						injectInputParamValues(action, cmd.getArgs());
 						action.run();
 						printOutputParamValues(action);
 					}
 				} 
-				catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+				catch (ClassNotFoundException | InstantiationException | IllegalAccessException | 
+						IllegalArgumentException | InvocationTargetException | NoSuchMethodException | 
+						SecurityException e) {
 					LOGGER.severe("Execution failed: " + e.toString());
 				} 
 			}
@@ -299,7 +306,7 @@ public class CLI {
 			for (Class<? extends IActionPack> actionPackClass : actionPackClasses) {
 				IActionPack actionPack;
 				try {
-					actionPack = (IActionPack) actionPackClass.newInstance();
+					actionPack = (IActionPack) actionPackClass.getDeclaredConstructor().newInstance();
 					if (actionPack != null && actionPack.getName() != null) {
 						System.out.println("[ActionPack] " + actionPackClass.getName() + " (" + actionPack.getName() + ")");	
 					}
@@ -307,7 +314,7 @@ public class CLI {
 						System.out.println("[ActionPack] " + actionPackClass.getName());
 					}
 				} 
-				catch (InstantiationException | IllegalAccessException e) {
+				catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					LOGGER.warning("Exception: " + e.toString());
 				}
 			}
@@ -318,7 +325,7 @@ public class CLI {
 		for (Class<? extends IAction> actionClass : actionClasses) {
 			if (!actionClass.isInterface() && !Modifier.isAbstract(actionClass.getModifiers())) {
 				try {
-					IAction action = (IAction) actionClass.newInstance();
+					IAction action = (IAction) actionClass.getDeclaredConstructor().newInstance();
 					if (action != null && action.getName() != null) {
 						System.out.println("[Action]     " + actionClass.getName() + " (" + action.getName() + ")");
 					}
@@ -326,7 +333,7 @@ public class CLI {
 						System.out.println("[Action]     " + actionClass.getName());	
 					}
 				} 
-				catch (InstantiationException | IllegalAccessException e) {
+				catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
 					LOGGER.warning("Exception: " + e.toString());
 				}
 			}
@@ -372,7 +379,7 @@ public class CLI {
 				catch (NoClassDefFoundError | UnsupportedClassVersionError e) {}
 			}
 		} 
-		catch (IOException e) {
+		catch (Exception e) {
 			LOGGER.warning("Exception: " + e.toString());
 		}
 		return actionPackClasses;

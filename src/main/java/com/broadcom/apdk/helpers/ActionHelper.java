@@ -157,7 +157,7 @@ public class ActionHelper {
 							if (adapterClass != null) {
 								Class<?> typeArgument = (Class<?>) ((ParameterizedType) adapterClass
 										.getGenericSuperclass()).getActualTypeArguments()[0];
-								IParamAdapter<?> adapter = adapterClass.newInstance();
+								IParamAdapter<?> adapter = adapterClass.getDeclaredConstructor().newInstance();
 								if (typeArgument.isAssignableFrom(field.getType())) {
 									Method method = adapter.getClass().getDeclaredMethod("convertToString", typeArgument);
 									String returnValue = (String) method.invoke(adapter, typeArgument.cast(value));
@@ -239,7 +239,7 @@ public class ActionHelper {
 							if (adapterClass != null) {
 								Class<?> typeArgument = (Class<?>) ((ParameterizedType) adapterClass
 										.getGenericSuperclass()).getActualTypeArguments()[0];
-								IParamAdapter<?> adapter = adapterClass.newInstance();
+								IParamAdapter<?> adapter = adapterClass.getDeclaredConstructor().newInstance();
 								if (typeArgument.isAssignableFrom(field.getType())) {
 									Method method = adapter.getClass().getDeclaredMethod("convertToType", String.class);
 									Object typeValue = method.invoke(adapter, value);

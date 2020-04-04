@@ -79,7 +79,8 @@ public class CliMainExportTest extends ExportTest {
 				"uc-export/VARA");
 		String expectedVaraXML = XmlHelper.getXMLFragmentAsString(
 				"PCK.CUSTOM_APDK_TEST1.PUB.VAR.METADATA_01.xml", "uc-export/VARA");
-		assertThat(testVaraXML, CompareMatcher.isIdenticalTo(expectedVaraXML));
+		assertThat(expectedVaraXML, 
+				CompareMatcher.isIdenticalTo(testVaraXML).ignoreElementContentWhitespace());
 		
 		checkContentXML("CONTENT_01.xml", extractedFiles.get("CONTENT.xml"));
 
@@ -101,7 +102,8 @@ public class CliMainExportTest extends ExportTest {
 		expectedContentXML = expectedContentXML.replace(expectedClientVersion, actualClientVersion);
 		expectedContentXML = expectedContentXML.replace(expectedChecksum, actualChecksum);
 		expectedContentXML = expectedContentXML.replace(expectedSize, actualSize);
-		assertThat(testContentXML, CompareMatcher.isIdenticalTo(expectedContentXML));		
+		assertThat(expectedContentXML, 
+				CompareMatcher.isIdenticalTo(testContentXML).ignoreElementContentWhitespace());		
 	}
 
 }
