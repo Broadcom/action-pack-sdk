@@ -1,5 +1,5 @@
 # Action Pack Development Kit
-This project is supposed to enable Action Pack development in Java. No more need to deal with all the Automic Automation Engine objects. Full focus on developing reusable building blocks for your automated processes!
+This project enables Action Pack development in Java. No more need to deal with all the Automic Automation Engine objects from AWI. Full focus on developing reusable building blocks for your automated processes leveraging your existing coding best practices!
 
 ## Build 
 The Maven build creates a JAR-file.
