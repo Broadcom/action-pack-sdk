@@ -4,9 +4,35 @@
 	<groupId>com.broadcom</groupId>
 	<artifactId>action-pack-sdk</artifactId>
 	<packaging>jar</packaging>
-	<version>1.0.0-SNAPSHOT</version>
-	<name>apdk</name>
-	<url>http://www.broadcom.com</url>
+	<version>0.0.1</version>
+	<name>Automic Action Pack Development Kit</name>
+	<url>https://github.com/Broadcom/action-pack-sdk</url>
+	<organization>
+		<name>Broadcom</name>
+		<url>https://github.com/Broadcom</url>
+	</organization>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/Broadcom/action-pack-sdk/issues</url>
+	</issueManagement>
+	<licenses>
+		<license>
+			<name>MIT License</name>
+			<url>https://github.com/Broadcom/action-pack-sdk/blob/master/LICENSE</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+	<scm>
+		<connection>scm:git:git://github.com/Broadcom/action-pack-sdk.git</connection>
+		<developerConnection>scm:git:git@github.com:Broadcom/action-pack-sdk.git</developerConnection>
+		<url>https://github.com/Broadcom/action-pack-sdk</url>
+		<tag>HEAD</tag>
+	</scm>
+	<developers>
+		<developer>
+			<name>michaelgrath</name>
+		</developer>
+	</developers>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<xmlunit.version>2.6.4</xmlunit.version>
@@ -82,6 +108,51 @@
 		</resources>
 		<plugins>	 
 			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<version>2.8.2</version>
+				<executions>
+					<execution>
+						<id>default-deploy</id>
+						<phase>deploy</phase>
+						<goals>
+							<goal>deploy</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-release-plugin</artifactId>
+				<version>2.5.3</version>
+				<configuration>
+					<tagNameFormat>v@{project.version}</tagNameFormat>
+					<localCheckout>true</localCheckout>
+					<pushChanges>false</pushChanges>
+					<mavenExecutorId>forked-path</mavenExecutorId>
+					<!-- 
+					<arguments>-Dgpg.passphrase=${gpg.passphrase}</arguments>
+					 -->
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.apache.maven.scm</groupId>
+						<artifactId>maven-scm-provider-gitexe</artifactId>
+						<version>1.9.5</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+			<plugin>
+				<groupId>org.sonatype.plugins</groupId>
+				<artifactId>nexus-staging-maven-plugin</artifactId>
+				<version>1.6.7</version>
+				<extensions>true</extensions>
+				<configuration>
+					<serverId>ossrh</serverId>
+					<nexusUrl>https://oss.sonatype.org/</nexusUrl>
+					<autoReleaseAfterClose>true</autoReleaseAfterClose>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
 				<version>3.2.0</version>
@@ -115,4 +186,48 @@
 			</plugin>
 		</plugins>
 	</build>
+	<distributionManagement>
+		<snapshotRepository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+		</snapshotRepository>
+		<repository>
+			<id>ossrh</id>
+			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+		</repository>
+	</distributionManagement>
+	<profiles>
+		<!-- 
+			GPG Signature creation is wrapped into a Maven profile in order to
+			avoid time consuming signature creation when building a new snapshot 
+			version.
+		 -->
+		<profile>
+			<id>release-sign-artifacts</id>
+			<activation>
+				<property>
+					<name>performRelease</name>
+					<value>true</value>
+				</property>
+			</activation>
+			<build>
+				<plugins>
+					<plugin>
+						<groupId>org.apache.maven.plugins</groupId>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<version>1.6</version>
+						<executions>
+							<execution>
+								<id>sign-artifacts</id>
+								<phase>verify</phase>
+								<goals>
+									<goal>sign</goal>
+								</goals>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
