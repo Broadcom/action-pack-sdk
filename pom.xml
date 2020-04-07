@@ -4,7 +4,7 @@
 	<groupId>com.broadcom</groupId>
 	<artifactId>action-pack-sdk</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.1</version>
+	<version>0.0.1-SNAPSHOT</version>
 	<name>Automic Action Pack Development Kit</name>
 	<url>https://github.com/Broadcom/action-pack-sdk</url>
 	<organization>
