@@ -19,8 +19,7 @@ import com.broadcom.apdk.api.annotations.Action;
  * <b>Logging</b><br>Use the provided {@link java.util.logging.Logger LOGGER} to create log
  * messages in order to stay aligned with the development kit's logging configuration that is 
  * configured using the command line argument <i>-l</i> of the generated executable jar-file.
- * Per default logging is disabled.
- * </p>
+ * Per default logging is disabled.<br><br>
  * <b>Example:</b><br>
  * <pre>
  * &#64;Action(
