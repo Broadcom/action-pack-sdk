@@ -13,7 +13,7 @@ import com.broadcom.apdk.api.annotations.Action;
  * {@link com.broadcom.apdk.api.IAction#run() run} method.
  * </p>
  * <p>
- * <b>Input & output parameters</b><br>
+ * <b>Input and output parameters</b><br>
  * Use the annotations {@link com.broadcom.apdk.api.annotations.ActionInputParam ActionInputParam} 
  * and {@link com.broadcom.apdk.api.annotations.ActionOutputParam ActionOutputParam} to mark
  * non-private fields as input- and output parameters of your action. Use the command line argument
