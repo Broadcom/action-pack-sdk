@@ -5,21 +5,17 @@ import java.util.logging.Logger;
 import com.broadcom.apdk.api.annotations.Action;
 
 /**
- * <p>
  * Provides a basic implementation of {@link com.broadcom.apdk.api.IAction IAction} that
  * provides setters and getters for all fields. Furthermore it populates the fields with the 
  * values that were defined using an {@link com.broadcom.apdk.api.annotations.Action Action} 
  * annotation. Classes extending this abstract class must implement the 
- * {@link com.broadcom.apdk.api.IAction#run() run} method.
- * </p>
- * <p>
+ * {@link com.broadcom.apdk.api.IAction#run() run} method.<br><br>
  * <b>Input and output parameters</b><br>
  * Use the annotations {@link com.broadcom.apdk.api.annotations.ActionInputParam ActionInputParam} 
  * and {@link com.broadcom.apdk.api.annotations.ActionOutputParam ActionOutputParam} to mark
  * non-private fields as input- and output parameters of your action. Use the command line argument
  * <i>-r</i> of the generated executable jar-file to run your action and pass the appropriate input
- * parameters to your action.
- * </p>
+ * parameters to your action.<br><br>
  * <b>Logging</b><br>Use the provided {@link java.util.logging.Logger LOGGER} to create log
  * messages in order to stay aligned with the development kit's logging configuration that is 
  * configured using the command line argument <i>-l</i> of the generated executable jar-file.

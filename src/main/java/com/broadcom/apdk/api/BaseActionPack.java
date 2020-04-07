@@ -3,21 +3,17 @@ package com.broadcom.apdk.api;
 import com.broadcom.apdk.api.annotations.ActionPack;
 
 /**
- * <p>
  * Provides a basic implementation of {@link com.broadcom.apdk.api.IActionPack IActionPack} that
  * provides setters and getters for all fields. Furthermore it populates the fields with the 
  * values that were defined using an {@link com.broadcom.apdk.api.annotations.ActionPack ActionPack} 
- * annotation. 
- * </p>
- * <p>
+ * annotation.<br><br>
  * <b>Note:</b> If the values for the fields <i>name</i>, <i>packageFormatVersion</i> and 
  * <i>version</i> are not overwritten they'll be initialized automatically. The field <i>name</i>
  * will contain the name of your class with the prefix "PCK.CUSTOM_", the field
  * <i>packageFormatVersion</i> will per default contain the value "0.3.0" and the field
  * <i>version</i> will contain the version defined in your project's POM file (the latter may 
  * not work in your IDE unless there's a MANIFEST file that contains this information) or "1.0.0" 
- * if no version information was found.
- * </p>
+ * if no version information was found.<br><br>
  * <b>Example:</b><br>
  * <pre>
  * &#64;ActionPack(
