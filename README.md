@@ -35,7 +35,7 @@ Create a new Java Maven project and add this development kit as dependency to yo
 <dependency>
   <groupId>com.broadcom</groupId>
   <artifactId>action-pack-sdk</artifactId>
-  <version>1.0.0-SNAPSHOT</version>
+  <version>0.0.1</version>
 </dependency>
 ```
 Furthermore please add the following plugins to your pom file:
