@@ -37,7 +37,7 @@ public class CLI {
 	
 	private final static Logger LOGGER = Logger.getLogger("APDK");
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws ExportException {
 		
 		Options options = getOptions();
 		CommandLine cmd = getParsedCommandLine(options, args);
@@ -150,6 +150,7 @@ public class CLI {
 					ClassNotFoundException | IllegalArgumentException | InvocationTargetException | 
 					NoSuchMethodException | SecurityException e) {
 				LOGGER.severe("Export failed: " + e.toString());
+				throw new ExportException("Export failed: " + e.toString());
 			} 
 		}
 		

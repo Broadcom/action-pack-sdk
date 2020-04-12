@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -46,6 +47,7 @@ import com.broadcom.apdk.api.IAction;
 import com.broadcom.apdk.api.IActionPack;
 import com.broadcom.apdk.api.annotations.ActionInputParam;
 import com.broadcom.apdk.api.annotations.ActionOutputParam;
+import com.broadcom.apdk.api.annotations.CustomType;
 import com.broadcom.apdk.api.annotations.EnumValue;
 import com.broadcom.apdk.helpers.ActionHelper;
 import com.broadcom.apdk.helpers.FolderHelper;
@@ -192,6 +194,13 @@ class ExportService {
 			export(licensesDocu, destinationFolder);
 			files.put(Paths.get(publicDocu.getName() + ".xml"), "DOCUMENTATION");
 			files.put(Paths.get(licensesDocu.getName() + ".xml"), "DOCUMENTATION");
+			
+			// Create STORAGE object that contains CustomTypes
+			IStorage customTypes = getCustomTypeSTORAGE(actionPack);
+			if (customTypes != null) {
+				LOGGER.info("Create object \"" + customTypes.getName() + "\"");
+				rootFolder = (Folder) FolderHelper.insertObject(rootFolder, "RESOURCES", customTypes);
+			}
 			
 			// Create STORAGE object that contains the Action Pack binaries
 			IStorage apjar = getBinarySTORAGE(actionPack);
@@ -426,7 +435,7 @@ class ExportService {
 		if (actionClass != null) {
 			try {
 				IAction action = (IAction) actionClass.getDeclaredConstructor().newInstance();
-				return action.getName().toUpperCase();
+				return action.getName().replace(" ", "_").toUpperCase();
 			} 
 			catch (InstantiationException | IllegalAccessException | IllegalArgumentException | 
 					InvocationTargetException | NoSuchMethodException | SecurityException e) {} 
@@ -489,11 +498,66 @@ class ExportService {
 		return destinationFolder;
 	}
 	
+	private Storage getCustomTypeSTORAGE(IActionPack actionPack) throws ExportException {
+		if (actionPack != null) {
+			Class<?> actionPackClass = actionPack.getClass();
+			CustomType[] customTypeAnnotations = actionPackClass.getAnnotationsByType(CustomType.class);
+			if (customTypeAnnotations.length > 0) {
+				String actionPackName = toValidName(getActionPackName(actionPack));
+				Storage store = new Storage(actionPackName + ".PRV.CUSTOM_TYPES");
+				List<StoredFile> storedFiles = new ArrayList<StoredFile>();
+				Path jarFilePath = getJAR();
+				for (CustomType customType : customTypeAnnotations) {
+					if (customType.filename() != null && !customType.filename().isEmpty()) {
+						String filename = customType.filename();
+						if (filename.lastIndexOf("/") > -1 && filename.lastIndexOf("/") < filename.length()) {
+							filename = filename.substring(filename.lastIndexOf("/") + 1);
+						}
+						try {	
+							if (filename.toUpperCase().endsWith(".XML")) {
+								InputStream inputStream = this.getClass().getClassLoader().getResourceAsStream(customType.filename());
+								if (inputStream != null) {
+									byte[] buffer = new byte[inputStream.available()];
+									inputStream.read(buffer);
+									File targetFile = new File(jarFilePath.getParent().toString() + 
+											jarFilePath.getFileSystem().getSeparator() + filename);
+									Files.write(buffer, targetFile);
+									String storedFileName = customType.type().name().toUpperCase() + "#" + 
+											filename.substring(0, filename.lastIndexOf(".")).
+											replace(" ", "_").toUpperCase();		
+									StoredFile storedFile = new StoredFile(storedFileName, targetFile.toPath(), 
+											FileType.TEXT, actionPack.getVersion());
+									storedFiles.add(storedFile);	
+									String newName = jarFilePath.getParent().toString() + File.separator + 
+											store.getName() + "-" + storedFile.getName() + "-ALL-ALL-ALL";	
+									targetFile.renameTo(new File(newName));
+									LOGGER.info("Found custom type resource \"" + filename + "\"");	
+								}
+								else {
+									throw new ExportException("Failed to find resource \"" + filename + "\"");
+								}
+							}
+							else {
+								throw new ExportException("Resource \"" + filename + "\" is not a XML file");
+							}
+						}
+						catch (IOException e) {
+							throw new ExportException(e.getClass().getName() + ": " + e.getMessage());	
+						}
+					}
+				}
+				store.setStoredFiles(storedFiles);
+				return !storedFiles.isEmpty() ? store : null;
+			}
+		}
+		return null;
+	}
+	
 	private Storage getBinarySTORAGE(IActionPack actionPack) throws ExportException {
 		String actionPackName = toValidName(getActionPackName(actionPack));
 		Storage store = new Storage(actionPackName + ".PRV.STORE");
 		List<StoredFile> storedFiles = new ArrayList<StoredFile>();
-		String version = this.getClass().getPackage().getImplementationVersion();
+		String version = actionPack.getVersion();
 		Path jarFilePath = getJAR();		
 		StoredFile storedFile = new StoredFile("APJAR", jarFilePath, FileType.BINARY, version);
 		storedFiles.add(storedFile);
@@ -501,7 +565,8 @@ class ExportService {
 				store.getName() + "-" + storedFile.getName() + "-ALL-ALL-ALL";	
 		try {
 			Files.copy(new File(jarFilePath.toString()), new File(destFile));
-		} catch (IOException e) {
+		} 
+		catch (IOException e) {
 			throw new ExportException(e.getClass().getName() + ": " + e.getMessage());
 		}
 		store.setStoredFiles(storedFiles);
@@ -513,7 +578,6 @@ class ExportService {
 			String jar = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().toURI()).getPath();
 			Path jarFilePath = Paths.get(jar);
 			if (!jarFilePath.getFileName().toString().toUpperCase().endsWith(".JAR")) {
-//				jarFilePath = Paths.get("C:\\Users\\mg685065\\Documents\\Sources\\custom-action-pack\\target\\custom-action-pack-1.0.0-SNAPSHOT.jar");
 				throw new ExportException("Running file isn't a valid JAR file");
 			}
 			return jarFilePath;	
@@ -543,13 +607,23 @@ class ExportService {
 	
 	private VariableText getPromptExternalMapVARA(IActionPack actionPack, List<IAction> actions) {
 		String actionPackName = toValidName(getActionPackName(actionPack));
+		List<KeyValueGroup<String>> values = new ArrayList<KeyValueGroup<String>>();
 		VariableText vara = new VariableText(actionPackName + ".PUB.PROMPT_EXTERNAL_MAP");
+		// Insert LOGIN and AGENT mappings
+		for (IAction action : actions) {
+			values.add(new KeyValueGroup<String>(actionPackName + ".PUB.ACTION." + 
+					getActionName(action.getClass()) + "/AGENT#", "&AGENT#"));		
+			values.add(new KeyValueGroup<String>(actionPackName + ".PUB.ACTION." + 
+					getActionName(action.getClass()) + "/LOGIN#", "&LOGIN#"));	
+		}
+		// Check CDA mappings
 		Map<String, String> mappings = ActionHelper.getCDAMappings(actions); 
 		if (!mappings.isEmpty()) {
-			List<KeyValueGroup<String>> values = new ArrayList<KeyValueGroup<String>>();
 			for (String key : mappings.keySet()) {
 				values.add(new KeyValueGroup<String>(actionPackName + ".PUB.ACTION." + key, mappings.get(key)));
 			}
+		}
+		if (!values.isEmpty()) {
 			vara.setValues(values);
 		}
 		return vara;

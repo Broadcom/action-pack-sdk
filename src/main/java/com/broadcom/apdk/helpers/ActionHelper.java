@@ -346,7 +346,7 @@ public class ActionHelper {
 				ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
 				if (!annotation.cdaMapping().isEmpty()) {
 					String key = action.getName() != null ? 
-							action.getName().toUpperCase() : 
+							action.getName().replace(" ", "_").toUpperCase() : 
 							action.getClass().getSimpleName().toUpperCase();
 					String paramName = field.getName().toUpperCase() + "#";
 					if (!annotation.name().isEmpty()) {

@@ -6,7 +6,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import com.broadcom.apdk.cli.CLI;
+import com.broadcom.apdk.cli.ExportException;
 
 public class CliMainRunTest extends ApiTest {
 	
@@ -51,7 +51,7 @@ public class CliMainRunTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-r com.broadcom.TestAction1"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 
@@ -88,7 +88,7 @@ public class CliMainRunTest extends ApiTest {
 					"datetime=1980-03-04 14:08",
 					"time=14:08"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 
@@ -124,7 +124,7 @@ public class CliMainRunTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-r com.broadcom.TestAction5"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 		
@@ -165,7 +165,7 @@ public class CliMainRunTest extends ApiTest {
 			CLI.main(new String[] {"-r com.broadcom.TestAction6", 
 					"candidate=\"Michael\",\"Grath\""});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 		

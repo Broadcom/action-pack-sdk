@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -18,6 +17,7 @@ import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import com.broadcom.apdk.cli.CLI;
+import com.broadcom.apdk.cli.ExportException;
 
 public class CliMainInfoTest extends ApiTest {
 	
@@ -52,7 +52,7 @@ public class CliMainInfoTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-i"});
 		} 
-		catch (IOException e) {
+		catch (Exception e) {
 			e.printStackTrace();
 		}
 		
@@ -71,7 +71,7 @@ public class CliMainInfoTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-i"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 
@@ -91,7 +91,7 @@ public class CliMainInfoTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-i"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 
@@ -113,7 +113,7 @@ public class CliMainInfoTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-i"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 
@@ -137,7 +137,7 @@ public class CliMainInfoTest extends ApiTest {
 		try {
 			CLI.main(new String[] {"-i com.broadcom.TestActionPack1"});
 		} 
-		catch (IOException e) {
+		catch (ExportException e) {
 			e.printStackTrace();
 		}
 
