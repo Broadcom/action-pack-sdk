@@ -522,11 +522,13 @@ class ExportService {
 									File targetFile = new File(jarFilePath.getParent().toString() + 
 											jarFilePath.getFileSystem().getSeparator() + filename);
 									Files.write(buffer, targetFile);
+									String customTypeName = !customType.name().isEmpty() ? customType.name() : 
+											filename.substring(0, filename.lastIndexOf("."));
+									String order = customType.order() > 0 ? "#" + customType.order() : "";
 									String storedFileName = customType.type().name().toUpperCase() + "#" + 
-											filename.substring(0, filename.lastIndexOf(".")).
-											replace(" ", "_").toUpperCase();		
-									StoredFile storedFile = new StoredFile(storedFileName, targetFile.toPath(), 
-											FileType.TEXT, actionPack.getVersion());
+											customTypeName.replace(" ", "_").toUpperCase() + order;		
+									StoredFile storedFile = new StoredFile(storedFileName, targetFile.toPath(), FileType.TEXT, 
+											!customType.version().isEmpty() ? customType.version() : actionPack.getVersion());
 									storedFiles.add(storedFile);	
 									String newName = jarFilePath.getParent().toString() + File.separator + 
 											store.getName() + "-" + storedFile.getName() + "-ALL-ALL-ALL";	

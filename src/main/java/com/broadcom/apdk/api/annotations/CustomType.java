@@ -16,6 +16,12 @@ public @interface CustomType {
 	public String filename();
 	
 	public MainType type();
+	
+	public int order() default 0;
+	
+	public String name() default "";
+	
+	public String version() default "";
     
     @Retention(RetentionPolicy.RUNTIME)
     @Target({ElementType.TYPE})
