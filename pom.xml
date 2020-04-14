@@ -4,7 +4,7 @@
 	<groupId>com.broadcom</groupId>
 	<artifactId>action-pack-sdk</artifactId>
 	<packaging>jar</packaging>
-	<version>0.0.4</version>
+	<version>0.0.4-SNAPSHOT</version>
 	<name>Automic Action Pack Development Kit</name>
 	<description>This project enables Action Pack development for Automic Automation (AA and CDA) in Java.</description>
 	<url>https://github.com/Broadcom/action-pack-sdk</url>
