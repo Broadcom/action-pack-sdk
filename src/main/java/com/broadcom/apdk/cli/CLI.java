@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
-import java.net.URLClassLoader;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
@@ -161,9 +160,7 @@ public class CLI {
 				actionClassName = actionClassName.trim();
 				try {
 					ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
-					((URLClassLoader) classLoader).getURLs();
 					Class<?> actionClass = classLoader.loadClass(actionClassName);	
-					
 					if (IAction.class.isAssignableFrom(actionClass) &&
 							!actionClass.isInterface() && !Modifier.isAbstract(actionClass.getModifiers())) {
 						IAction action = (IAction) actionClass.getDeclaredConstructor().newInstance();	
