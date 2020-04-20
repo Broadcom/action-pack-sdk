@@ -13,8 +13,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.junit.jupiter.api.parallel.Execution;
-import org.junit.jupiter.api.parallel.ExecutionMode;
 
 import com.broadcom.apdk.cli.CLI;
 import com.broadcom.apdk.cli.ExportException;
@@ -29,12 +27,12 @@ public class CliMainInfoTest extends ApiTest {
 	
 	@BeforeAll
 	public static void redirectStreams() {
-	    System.setOut(new PrintStream(outContent));
+	    System.setOut(new PrintStream(outContent, true));
 	}
 	
 	@AfterAll
 	public static void restoreStreams() {
-	    System.setOut(originalOut);
+		System.setOut(originalOut);
 	}
 	
 	@AfterEach
@@ -43,7 +41,6 @@ public class CliMainInfoTest extends ApiTest {
 	}
 	
 	@Test
-	@Execution(ExecutionMode.SAME_THREAD)
 	public void testInfoOneActionPack() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -61,7 +58,6 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
-	@Execution(ExecutionMode.SAME_THREAD)
 	public void testInfoMultipleActionPacks() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -81,7 +77,6 @@ public class CliMainInfoTest extends ApiTest {
 	}
 	
 	@Test
-	@Execution(ExecutionMode.SAME_THREAD)
 	public void testInfoActionPacksWithAction() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -101,7 +96,6 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
-	@Execution(ExecutionMode.SAME_THREAD)
 	public void testInfoMultipleActionPacksWithActions() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -125,7 +119,6 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
-	@Execution(ExecutionMode.SAME_THREAD)
 	public void testInfoMultipleActionPacksWithActionsSpecific() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -140,9 +133,10 @@ public class CliMainInfoTest extends ApiTest {
 		catch (ExportException e) {
 			e.printStackTrace();
 		}
-
+		
 		assertEquals("[ActionPack] com.broadcom.TestActionPack1 (PCK.CUSTOM_APDK_TEST1)\n" +
 				"[Action]     com.broadcom.TestAction2 (ACTION2)\n", 
 				outContent.toString().replace("\r\n", "\n"));
 	}
+
 }

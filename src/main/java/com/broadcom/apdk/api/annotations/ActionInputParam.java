@@ -33,6 +33,8 @@ public @interface ActionInputParam {
 	
 	public String dataReference() default "";
 	
+	public boolean required() default false;
+	
 	public boolean password() default false;
 
 	public String cdaMapping() default "";	

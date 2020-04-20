@@ -37,7 +37,7 @@ abstract class ApiTest {
 				// Load compiled classes 
 				URLClassLoader classLoader = new URLClassLoader(
 				        new URL[] {rootFolder.toURI().toURL()});
-				Thread.currentThread().setContextClassLoader(classLoader);//((URLClassLoader) Thread.currentThread().getContextClassLoader()).getURLs()
+				Thread.currentThread().setContextClassLoader(classLoader);
 			} 
 			catch (Exception e) {} 			
 		}

@@ -150,7 +150,7 @@ class ExportService {
 			// Define name of zip file
 			String version = this.getClass().getPackage().getImplementationVersion();
 			if (version != null) {
-				version = "-" + version.replace(".", "_");
+				version = "-" + version;
 			}
 			String zipFilename = destinationFolder + destinationFolder.getFileSystem().getSeparator() + 
 					actionPackName + (version != null ? version : "") + ".zip";
@@ -328,6 +328,7 @@ class ExportService {
 						}
 					}
 					String label = annotation.label().isEmpty() ? field.getName() : annotation.label(); 
+					boolean required = annotation.required();
 					String tooltip = annotation.tooltip(); 
 					String refType = annotation.refType();
 					String dataReference = annotation.dataReference();
@@ -337,6 +338,7 @@ class ExportService {
 						PromptText promptFloatOrDouble = new PromptText(variableName, label, tooltip, refType,
 								dataReference != null && !dataReference.isEmpty() ? dataReference : "UC_DATATYPE_STRING");
 						promptFloatOrDouble.setRegEx("[-+]?\\d*\\.?\\d*");
+						promptFloatOrDouble.setRequired(required);
 						prompts.add(promptFloatOrDouble);
 					}
 					else if (field.getType().equals(Integer.class) || field.getType().equals(Integer.TYPE) ||
@@ -349,6 +351,7 @@ class ExportService {
 						PromptText promptLong = new PromptText(variableName, label, tooltip, refType, 
 								dataReference != null && !dataReference.isEmpty() ? dataReference : "UC_DATATYPE_STRING");
 						promptLong.setRegEx("[-+]?\\d*");
+						promptLong.setRequired(required);
 						prompts.add(promptLong);
 					}
 					else if (field.getType().equals(Boolean.class) || field.getType().equals(Boolean.TYPE)) {
@@ -377,11 +380,14 @@ class ExportService {
 						PromptText promptText = new PromptText(variableName, label, 
 								tooltip, "STATIC", "UC_DATATYPE_STRING");
 						promptText.setShowPassword(true);
+						promptText.setRequired(required);
 						prompts.add(promptText);
 					}
 					else {
-						prompts.add(new PromptText(variableName, label, tooltip, refType, 
-								dataReference != null && !dataReference.isEmpty() ? dataReference : "UC_DATATYPE_STRING"));	
+						PromptText promptText = new PromptText(variableName, label, tooltip, refType, 
+								dataReference != null && !dataReference.isEmpty() ? dataReference : "UC_DATATYPE_STRING");	
+						promptText.setRequired(required);
+						prompts.add(promptText);
 					}
 				}
 			} 
