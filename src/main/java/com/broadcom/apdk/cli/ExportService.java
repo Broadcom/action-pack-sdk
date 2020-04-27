@@ -64,6 +64,7 @@ import com.broadcom.apdk.objects.IPrompt;
 import com.broadcom.apdk.objects.IPromptSet;
 import com.broadcom.apdk.objects.IStorage;
 import com.broadcom.apdk.objects.IVariable;
+import com.broadcom.apdk.objects.IWorkflow;
 import com.broadcom.apdk.objects.IWorkflowTask;
 import com.broadcom.apdk.objects.JobUnix;
 import com.broadcom.apdk.objects.JobWindows;
@@ -825,29 +826,7 @@ class ExportService {
 		actionWorkflow.setTasks(tasks);	
 		
 		// Inject initilized values of inputVariables to promptsets assigned to the workflow
-		Map<String, Object> initValues = ActionHelper.getActinInputParamValues(action);
-		List<IPromptSet> initializedPromptSets = new ArrayList<IPromptSet>();
-		for (IPromptSet promptSet : actionWorkflow.getPromptSets()) {
-			List<IPrompt<?>> initializedPrompts = new ArrayList<IPrompt<?>>();
-			for (IPrompt<?> prompt : promptSet.getPrompts()) {
-				if (initValues.containsKey(prompt.getVariableName())) {
-					Object initValue = initValues.get(prompt.getVariableName());
-					for (Method method : prompt.getClass().getDeclaredMethods()) {
-						if (method.getParameterCount() == 1 && method.getName().equals("setValue")) {
-							try {
-								method.invoke(prompt, initValue);
-							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-				}
-				initializedPrompts.add(prompt);
-			}
-			promptSet.setPrompts(initializedPrompts);
-			initializedPromptSets.add(promptSet);
-		}
-		actionWorkflow.setPromptSets(initializedPromptSets);
+		actionWorkflow.setPromptSets(getInitializedPromptSets(actionWorkflow, action));
 		
 		// Add Variables for defined output parameters
 		Map<String, Field> outputParams = ActionHelper.getActionOutputParams(action);
@@ -880,6 +859,46 @@ class ExportService {
 				pathToActionLink, new Link(actionWorkflow));
 		
 		return rootFolder;
+	}
+	
+	private List<IPromptSet> getInitializedPromptSets(IWorkflow workflow, IAction action) {
+		Map<String, Object[]> initValues = ActionHelper.getActinInputParamValues(action);
+		List<IPromptSet> initializedPromptSets = new ArrayList<IPromptSet>();
+		for (IPromptSet promptSet : workflow.getPromptSets()) {
+			List<IPrompt<?>> initializedPrompts = new ArrayList<IPrompt<?>>();
+			for (IPrompt<?> prompt : promptSet.getPrompts()) {
+				if (initValues.containsKey(prompt.getVariableName())) {
+					Object[] initValueArray = initValues.get(prompt.getVariableName());
+					Object initValue = initValueArray[0];
+					for (Method method : prompt.getClass().getDeclaredMethods()) {
+						if (method.getParameterCount() == 1 && method.getName().equals("setValue")) {
+							try {
+								Class<?> paramType = null;
+								Class<?>[] paramClasses = method.getParameterTypes();
+								if (paramClasses.length == 1) {
+									paramType = paramClasses[0];	
+								}
+								// If Prompt accepts String but value isn't a String then trigger a conversion
+								if (!initValue.getClass().equals(Object.class) && 
+										!initValue.getClass().equals(String.class) && 
+										paramType.equals(String.class)) {
+									method.invoke(prompt, initValueArray[1]);
+								}
+								else if (initValue.getClass().equals(paramType)) {
+									method.invoke(prompt, initValue);
+								}
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				initializedPrompts.add(prompt);
+			}
+			promptSet.setPrompts(initializedPrompts);
+			initializedPromptSets.add(promptSet);
+		}		
+		return initializedPromptSets;
 	}
 	
 	private String getFilename(IStorage jarFile, String name) {

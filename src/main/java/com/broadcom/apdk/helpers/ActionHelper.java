@@ -33,36 +33,33 @@ public class ActionHelper {
 	
 	private final static Logger LOGGER = Logger.getLogger("APDK");
 	
-	public static Map<String, Object> getActinInputParamValues(IAction action) {
-		Map<String, Object> initValues = new HashMap<String, Object>();
+	public static Map<String, Object[]> getActinInputParamValues(IAction action) {
+		Map<String, Object[]> initValues = new HashMap<String, Object[]>();
 		Map<String, Field> inputParams = getActionInputParams(action);
 		for (String fieldName : inputParams.keySet()) {
 			Field field = inputParams.get(fieldName);
 			String variableName = getVariableNameFromParam(field, ActionInputParam.class);
-			Object fieldValue = null;
+			Object[] fieldValues = new Object[2];
 			Method getter = getGetter(action.getClass(), field);
 			if (getter == null) {
 				try {
 					field.setAccessible(true);
-					fieldValue = field.get(action);	
-				} catch (IllegalArgumentException e) {
+					fieldValues[0] = field.get(action);	
+				} catch (IllegalArgumentException | IllegalAccessException e) {
 					LOGGER.warning("Exception: " + e.toString());	
-				} catch (IllegalAccessException e) {
-					LOGGER.warning("Exception: " + e.toString());	
-				}				
+				}			
 			}
 			else {
 				try {
-					fieldValue = getter.invoke(action);
-				} catch (IllegalAccessException e) {
-					LOGGER.warning("Exception: " + e.toString());	
-				} catch (IllegalArgumentException e) {
-					LOGGER.warning("Exception: " + e.toString());	
-				} catch (InvocationTargetException e) {
+					fieldValues[0] = getter.invoke(action);
+				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 					LOGGER.warning("Exception: " + e.toString());	
 				}
 			}	
-			initValues.put(variableName, fieldValue);
+			if (fieldValues[0] != null) {
+				fieldValues[1] = getParamAsString(field, action);
+				initValues.put(variableName, fieldValues);
+			}
 		}
 		return initValues;
 	}
