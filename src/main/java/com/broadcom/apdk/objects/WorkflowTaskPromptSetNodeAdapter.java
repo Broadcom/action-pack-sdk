@@ -37,7 +37,10 @@ public class WorkflowTaskPromptSetNodeAdapter extends XmlAdapter<Element, IPromp
         	String elementName = VariableHelper.getSanitizedValue(value.getVariableName());
         	QName rootElement = new QName(elementName);
         	WorkflowTaskPromptSetNodePromptEntry entry = 
-        			new WorkflowTaskPromptSetNodePromptEntry(value.getVariableName(), value.getPromptSetName());
+        			new WorkflowTaskPromptSetNodePromptEntry(
+        					value.getVariableName(), 
+        					value.getPromptSetName(),
+        					value.getValueAsString());
         	JAXBElement jaxbElement = new JAXBElement(rootElement, entry.getClass(), entry);
         	Document document = getDocumentBuilder().newDocument();
         	Marshaller marshaller = getJAXBContext(entry.getClass()).createMarshaller();

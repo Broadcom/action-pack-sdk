@@ -36,7 +36,7 @@ public class PromptSetNodeAdapter extends XmlAdapter<Element, IPrompt<?>> {
         if (value != null) {
         	String elementName = VariableHelper.getSanitizedValue(value.getVariableName());
         	QName rootElement = new QName(elementName);
-        	PromptSetNodePromptEntry entry = new PromptSetNodePromptEntry();
+        	PromptSetNodePromptEntry entry = new PromptSetNodePromptEntry(value.getValueAsString());
         	JAXBElement jaxbElement = new JAXBElement(rootElement, entry.getClass(), entry);
         	Document document = getDocumentBuilder().newDocument();
         	Marshaller marshaller = getJAXBContext(entry.getClass()).createMarshaller();

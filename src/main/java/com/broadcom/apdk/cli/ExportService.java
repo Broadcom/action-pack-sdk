@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -593,9 +594,6 @@ class ExportService {
 		catch (URISyntaxException e) {
 			throw new ExportException(e.getClass().getName() + ": " + e.getMessage());
 		} 
-		catch (ExportException e) {
-			throw new ExportException(e.getMessage());
-		}
 	}
 	
 	private Documentation getLicensesDOCU(IActionPack actionPack) {
@@ -825,6 +823,31 @@ class ExportService {
 		tasks.add(jobUNIX);
 		tasks.add(end);
 		actionWorkflow.setTasks(tasks);	
+		
+		// Inject initilized values of inputVariables to promptsets assigned to the workflow
+		Map<String, Object> initValues = ActionHelper.getActinInputParamValues(action);
+		List<IPromptSet> initializedPromptSets = new ArrayList<IPromptSet>();
+		for (IPromptSet promptSet : actionWorkflow.getPromptSets()) {
+			List<IPrompt<?>> initializedPrompts = new ArrayList<IPrompt<?>>();
+			for (IPrompt<?> prompt : promptSet.getPrompts()) {
+				if (initValues.containsKey(prompt.getVariableName())) {
+					Object initValue = initValues.get(prompt.getVariableName());
+					for (Method method : prompt.getClass().getDeclaredMethods()) {
+						if (method.getParameterCount() == 1 && method.getName().equals("setValue")) {
+							try {
+								method.invoke(prompt, initValue);
+							} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+				}
+				initializedPrompts.add(prompt);
+			}
+			promptSet.setPrompts(initializedPrompts);
+			initializedPromptSets.add(promptSet);
+		}
+		actionWorkflow.setPromptSets(initializedPromptSets);
 		
 		// Add Variables for defined output parameters
 		Map<String, Field> outputParams = ActionHelper.getActionOutputParams(action);

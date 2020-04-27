@@ -1,6 +1,7 @@
 package com.broadcom.apdk.objects;
 
 import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlValue;
 
 import org.eclipse.persistence.oxm.annotations.XmlMarshalNullRepresentation;
 import org.eclipse.persistence.oxm.annotations.XmlNullPolicy;
@@ -9,13 +10,15 @@ class WorkflowTaskPromptSetNodePromptEntry {
 	
 	private String variableName;
 	private String promptSetName;
+	private String initValue;
 	
 	@SuppressWarnings("unused")
 	private WorkflowTaskPromptSetNodePromptEntry() {};
 	
-	WorkflowTaskPromptSetNodePromptEntry(String variableName, String promptSetName) {
+	WorkflowTaskPromptSetNodePromptEntry(String variableName, String promptSetName, String initValue) {
 		this.variableName = variableName;
 		this.promptSetName = promptSetName;
+		this.initValue = initValue;
 	}
 	
 	@XmlAttribute(name = "haslist")
@@ -25,7 +28,7 @@ class WorkflowTaskPromptSetNodePromptEntry {
 	
 	@XmlAttribute(name = "altview")
 	String getAltView() {
-		return "0";
+		return initValue != null && initValue.startsWith("&") && initValue.endsWith("#") ? "1" : "0";
 	}
 	
 	@XmlAttribute(name = "ReadFromTable")
@@ -56,5 +59,10 @@ class WorkflowTaskPromptSetNodePromptEntry {
 	@XmlNullPolicy(emptyNodeRepresentsNull = true, nullRepresentationForXml = XmlMarshalNullRepresentation.EMPTY_NODE)
 	String getMsgInsert() {
 		return null;
+	}
+	
+	@XmlValue
+	String getInitValue() {
+		return initValue;
 	}
 }

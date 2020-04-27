@@ -33,6 +33,71 @@ public class ActionHelper {
 	
 	private final static Logger LOGGER = Logger.getLogger("APDK");
 	
+	public static Map<String, Object> getActinInputParamValues(IAction action) {
+		Map<String, Object> initValues = new HashMap<String, Object>();
+		Map<String, Field> inputParams = getActionInputParams(action);
+		for (String fieldName : inputParams.keySet()) {
+			Field field = inputParams.get(fieldName);
+			String variableName = getVariableNameFromParam(field, ActionInputParam.class);
+			Object fieldValue = null;
+			Method getter = getGetter(action.getClass(), field);
+			if (getter == null) {
+				try {
+					field.setAccessible(true);
+					fieldValue = field.get(action);	
+				} catch (IllegalArgumentException e) {
+					LOGGER.warning("Exception: " + e.toString());	
+				} catch (IllegalAccessException e) {
+					LOGGER.warning("Exception: " + e.toString());	
+				}				
+			}
+			else {
+				try {
+					fieldValue = getter.invoke(action);
+				} catch (IllegalAccessException e) {
+					LOGGER.warning("Exception: " + e.toString());	
+				} catch (IllegalArgumentException e) {
+					LOGGER.warning("Exception: " + e.toString());	
+				} catch (InvocationTargetException e) {
+					LOGGER.warning("Exception: " + e.toString());	
+				}
+			}	
+			initValues.put(variableName, fieldValue);
+		}
+		return initValues;
+	}
+	
+	private static Method getGetter(Class<?> objClass, Field field) {
+		List<Method> methods = getMethods(objClass, null);
+		for (Method method : methods) {
+			if (method.getParameterCount() == 0 && method.getReturnType().equals(field.getType())) {
+				if (method.getName().equalsIgnoreCase("get" + field.getName())) {
+					return method;
+				}
+				if (method.getReturnType().equals(Boolean.TYPE) && 
+						method.getReturnType().getClass().equals(Boolean.class) && 
+						method.getName().equalsIgnoreCase("is" + field.getName())) {
+					return method;
+				}
+			}
+		}
+		return null;
+	}
+	
+	private static List<Method> getMethods(Class<?> objClass, List<Method> methods) {
+		if (methods == null) {
+			methods = new ArrayList<Method>();
+		}
+		if (objClass.getSuperclass() != null) {
+			methods.addAll(getMethods(objClass.getSuperclass(), methods));	
+		}
+		Method[] declaredMethods = objClass.getDeclaredMethods();
+		for (Method declaredMethod : declaredMethods) {
+			methods.add(declaredMethod);
+		}
+		return methods;
+	}
+	
 	public static boolean hasPasswordFields(IAction action) {
 		Class<? extends IAction> actionClass = action.getClass();
 		if (actionClass != null) {
