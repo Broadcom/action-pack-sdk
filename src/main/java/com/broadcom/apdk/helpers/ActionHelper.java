@@ -28,6 +28,7 @@ import com.broadcom.apdk.api.ParamAdapter;
 import com.broadcom.apdk.api.annotations.ActionInputParam;
 import com.broadcom.apdk.api.annotations.ActionOutputParam;
 import com.broadcom.apdk.api.annotations.ActionParamAdapter;
+import com.broadcom.apdk.api.annotations.EnumValue;
 
 public class ActionHelper {
 	
@@ -58,6 +59,21 @@ public class ActionHelper {
 			}	
 			if (fieldValues[0] != null) {
 				fieldValues[1] = getParamAsString(field, action);
+				if (Enum.class.isAssignableFrom(field.getType())) {
+					Field[] enumFields = field.getType().getDeclaredFields();
+					if (enumFields != null) {
+						for (Field enumField : enumFields) {
+							if (enumField.isEnumConstant()) {
+								String value = enumField.getName();
+								if (enumField.isAnnotationPresent(EnumValue.class)) {
+									EnumValue annotation = enumField.getAnnotation(EnumValue.class);
+									value = annotation.value();
+								}
+								fieldValues[1] = value;
+							}
+						}
+					}
+				}
 				initValues.put(variableName, fieldValues);
 			}
 		}

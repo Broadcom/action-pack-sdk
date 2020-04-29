@@ -3,14 +3,16 @@ package com.broadcom.apdk.cli;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.net.URISyntaxException;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
@@ -230,7 +232,7 @@ class ExportService {
 				m.marshal(exportPackage, exportDocument);
 				
 				DOMSource source = new DOMSource(exportDocument);
-			    FileWriter writer = new FileWriter(new File(contentXML));
+				Writer writer = new OutputStreamWriter(new FileOutputStream(contentXML), StandardCharsets.UTF_8);
 			    StreamResult result = new StreamResult(writer);
 
 			    
@@ -291,7 +293,7 @@ class ExportService {
 			
 			DOMSource source = new DOMSource(wrapDocumentForExport(document));		
 			
-		    FileWriter writer = new FileWriter(new File(filename));
+			Writer writer = new OutputStreamWriter(new FileOutputStream(filename), StandardCharsets.UTF_8);
 		    StreamResult result = new StreamResult(writer);
 
 		    TransformerFactory factory = TransformerFactory.newInstance();
