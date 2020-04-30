@@ -20,8 +20,7 @@ import com.broadcom.apdk.api.annotations.ActionPack;
  *   name = "PCK.CUSTOM_SIMPLE",
  *   title = "My first Java action pack",
  *   category = "Custom Actions",
- *   company = "Broadcom",
- *   homepage = "http://www.broadcom.com"
+ *   company = "Your company"
  * )
  * public class CustomActionPack extends BaseActionPack {
  *   // You can leave the body empty...

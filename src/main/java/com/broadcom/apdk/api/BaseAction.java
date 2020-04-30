@@ -25,7 +25,7 @@ import com.broadcom.apdk.api.annotations.Action;
  * &#64;Action(
  *   name = "HELLO",
  *   title = "My first Java action",
- *   path = "BROADCOM"
+ *   path = "MYACTIONS"
  * )
  * public class CustomAction extends BaseAction {
  *   

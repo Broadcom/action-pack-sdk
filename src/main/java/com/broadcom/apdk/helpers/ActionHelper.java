@@ -65,11 +65,11 @@ public class ActionHelper {
 						for (Field enumField : enumFields) {
 							if (enumField.isEnumConstant()) {
 								String value = enumField.getName();
-								if (enumField.isAnnotationPresent(EnumValue.class)) {
+								if (enumField.isAnnotationPresent(EnumValue.class) &&
+										value.equals(fieldValues[1])) {
 									EnumValue annotation = enumField.getAnnotation(EnumValue.class);
-									value = annotation.value();
+									fieldValues[1] = annotation.value();
 								}
-								fieldValues[1] = value;
 							}
 						}
 					}
