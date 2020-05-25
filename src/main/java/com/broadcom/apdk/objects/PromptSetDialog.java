@@ -55,7 +55,7 @@ class PromptSetDialog {
 		setTop(4);
 		
 		Map<String, PropertyValue> properties = new HashMap<String, PropertyValue>();
-		properties.put("text", new PropertyValue(title));
+		properties.put("text", new PropertyValue(title != null ? title : "PRPT"));
 		properties.put("modifiable", new PropertyValue("0"));
 		setProperties(properties);
 	}
@@ -67,7 +67,7 @@ class PromptSetDialog {
 	@XmlPath("readpanel[@id='PRPTBOX']/@text")
 	@XmlNullPolicy(emptyNodeRepresentsNull = true, nullRepresentationForXml = XmlMarshalNullRepresentation.EMPTY_NODE)
 	String getTitle() {
-		return this.title;
+		return this.title != null ? this.title : "PRPT";
 	}
 
 	void setPrompts(List<IPrompt<?>> prompts) {

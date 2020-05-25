@@ -206,6 +206,9 @@ public class CLI {
 			for (String paramName : params.keySet()) {
 				Field field = params.get(paramName);
 				String paramValue = ActionHelper.getParamAsString(field, action);
+				if (ActionHelper.isPasswordOutputParameter(field) && field.getType().equals(String.class)) {
+					paramValue = ActionHelper.getEncryptedPassword(paramValue);
+				}
 				String variableName = ActionHelper.getVariableNameFromParam(field, ActionOutputParam.class);	
 				if (variableName.startsWith("&")) {
 					variableName = variableName.substring(1);
@@ -229,7 +232,7 @@ public class CLI {
 	private static IAction injectInputParamValues(IAction action, String[] arguments) {
 		if (action != null) {
 			Map<String, String> args = getOptionArguments(arguments);
-			Map<String, Field> params = ActionHelper.getActionInputParams(action);	
+			Map<String, List<Field>> params = ActionHelper.getActionInputParams(action);	
 			if (!params.isEmpty()) {
 				System.out.println("---------------------------------------------------------------------");
 				System.out.println("ACTION INPUT");
@@ -237,32 +240,48 @@ public class CLI {
 			}
 			for (String fieldName : params.keySet()) {
 				if (args.containsKey(fieldName)) {
-					Field field = params.get(fieldName);
-					
-					String argValue = checkNullValue(field, args.get(field.getName()));
-					Object value = ActionHelper.getParamAsOriginalType(field, action, argValue);
-					
-					if (value != null && (field.getType().isPrimitive() || field.getType().equals(value.getClass()))) {
-						field.setAccessible(true);
-						try {
-							if (ActionHelper.isPasswordField(field) && field.getType().equals(String.class)) {
-								String decryptedValue = ActionHelper.getDecryptedPassword((String) value);
-								field.set(action, decryptedValue);
+					List<Field> fieldHierarchy = params.get(fieldName);
+					if (!fieldHierarchy.isEmpty()) {
+						Field field = fieldHierarchy.get(fieldHierarchy.size() - 1);	
+						String argValue = checkNullValue(field, args.get(field.getName()));
+						Object value = ActionHelper.getArgumentAsParamType(field, argValue);	
+						Object object = action;
+						if (fieldHierarchy.size() == 2 && 
+								com.broadcom.apdk.api.IPromptSet.class.isAssignableFrom(fieldHierarchy.get(0).getType())) {
+							try {
+								fieldHierarchy.get(0).setAccessible(true);
+								object = fieldHierarchy.get(0).get(action);
+								if (object == null) {
+									Class<?> promptSetClass = fieldHierarchy.get(0).getType();
+									object = promptSetClass.getDeclaredConstructor().newInstance();	
+									fieldHierarchy.get(0).set(action, object);
+								}
+							} catch (IllegalArgumentException | IllegalAccessException | InstantiationException | InvocationTargetException | NoSuchMethodException | SecurityException e) {
+								LOGGER.warning("Exception: " + e.toString());
 							}
-							else {
-								field.set(action, value);
-							}
-							LOGGER.info("Assigned value \"" + field.getName() + 
-									"\" to identified input parameter \"" + 
-									args.get(field.getName()));
-							System.out.println(field.getName() + "=" +
-									(value != null ? (value.getClass().equals(String.class) ? "\"" + 
-									value + "\"" : value) : "NULL"));
-						} 
-						catch (IllegalArgumentException | IllegalAccessException e) {
-							LOGGER.warning("Exception: " + e.toString());
-						} 
-					}					
+						}
+						if (value != null && (field.getType().isPrimitive() || field.getType().equals(value.getClass()))) {
+							field.setAccessible(true);
+							try {
+								if (ActionHelper.isPasswordInputParameter(field) && field.getType().equals(String.class)) {
+									String decryptedValue = ActionHelper.getDecryptedPassword((String) value);
+									field.set(object, decryptedValue);
+								} 
+								else {
+									field.set(object, value);
+								}
+								LOGGER.info("Assigned value \"" + field.getName() + 
+										"\" to identified input parameter \"" + 
+										args.get(field.getName())+ "\"");
+								System.out.println(field.getName() + "=" +
+										(value != null ? (value.getClass().equals(String.class) ? "\"" + 
+										value + "\"" : value) : "NULL"));
+							} 
+							catch (IllegalArgumentException | IllegalAccessException e) {
+								LOGGER.warning("Exception: " + e.toString());
+							} 
+						}	
+					}
 				}
 			}
 			if (!params.isEmpty()) {

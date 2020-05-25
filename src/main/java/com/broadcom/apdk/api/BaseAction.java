@@ -50,6 +50,7 @@ public abstract class BaseAction implements IAction {
 	private String name;
 	private String title;
 	private String path;
+	private String documentation;
 	
 	public BaseAction() {
 		Action actionAnnotation = this.getClass().getAnnotation(Action.class);
@@ -95,6 +96,14 @@ public abstract class BaseAction implements IAction {
 	@Override
 	public void setPath(String path) {
 		this.path = path;
+	}
+	
+	public String getDocumentation() {
+		return documentation;
+	}
+
+	public void setDocumentation(String documentation) {
+		this.documentation = documentation;
 	}
 
 }

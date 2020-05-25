@@ -1,19 +1,15 @@
 package com.broadcom.apdk.api;
 
-public interface IAction {
-	
-	String getName();
-
-	void setName(String name);
-	
-	String getTitle();
-
-	void setTitle(String title);
+public interface IAction extends IPromptSet {
 	
 	String getPath();
 	
 	void setPath(String path);
 	
 	void run();
+	
+	String getDocumentation();
+	
+	void setDocumentation(String documentation);
 
 }

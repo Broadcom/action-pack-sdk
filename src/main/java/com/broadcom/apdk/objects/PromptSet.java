@@ -39,13 +39,14 @@ public class PromptSet extends NonExecutableAutomicObject implements IPromptSet 
 		setPrompts(prompts);
 	}
 	
-	public PromptSet(String name, String dialogTitle, List<IPrompt<?>> prompts) {
+	public PromptSet(String name, String title, List<IPrompt<?>> prompts) {
 		super(name);
-		setPrompts(prompts, dialogTitle);
+		setTitle(title);
+		setPrompts(prompts, title);
 	}
 	
 	public void setPrompts(List<IPrompt<?>> prompts) {
-		setPrompts(prompts, "PRPT");
+		setPrompts(prompts, getTitle());
 	}
 	
 	public void setPrompts(List<IPrompt<?>> prompts, String dialogTitle) {

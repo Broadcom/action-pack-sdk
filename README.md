@@ -22,7 +22,7 @@ This is probably the easiest way to create a new action pack. Download and build
 ```
 mvn archetype:generate -B -DarchetypeGroupId=com.broadcom 
                           -DarchetypeArtifactId=action-pack-archetype 
-                          -DarchetypeVersion=1.0.0 
+                          -DarchetypeVersion=1.1.0 
                           -DgroupId=com.broadcom 
                           -DartifactId=my-action-pack 
                           -Dversion=1.0.0-SNAPSHOT

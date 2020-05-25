@@ -96,7 +96,7 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
-	public void testInfoMultipleActionPacksWithActions() {	
+	public void testInfoMultipleActionPacksWithActions() {		
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
 		sourceFileNames.add("TestActionPack2.java");
@@ -110,7 +110,7 @@ public class CliMainInfoTest extends ApiTest {
 		catch (ExportException e) {
 			e.printStackTrace();
 		}
-
+		
 		assertEquals("[ActionPack] com.broadcom.TestActionPack1 (PCK.CUSTOM_APDK_TEST1)\n" +
 				"[ActionPack] com.broadcom.TestActionPack2 (PCK.CUSTOM_APDK_TEST2)\n" +
 				"[Action]     com.broadcom.TestAction2 (ACTION2)\n" +

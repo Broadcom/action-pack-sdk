@@ -311,7 +311,7 @@ class ExportService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	private PromptSetsAndVariables getPromptSetsAndVariables(String actionPackName, Class<? extends IAction> actionClass) {
+	private PromptSetsAndVariables getPromptSetsAndVariables(String actionPackName, Class<? extends com.broadcom.apdk.api.IPromptSet> actionClass) {
 		List<PromptSetEntry> promptSets = new ArrayList<PromptSetEntry>();
 		List<IPrompt<?>> prompts = new ArrayList<IPrompt<?>>();
 		List<IVariable> variables = new ArrayList<IVariable>();
@@ -394,18 +394,28 @@ class ExportService {
 						prompts.add(promptText);
 					}
 				}
+				if (com.broadcom.apdk.api.IPromptSet.class.isAssignableFrom(field.getType())) {
+					PromptSetsAndVariables promptsAndVariables = getPromptSetsAndVariables(
+							actionPackName, (Class<? extends com.broadcom.apdk.api.IPromptSet>) field.getType());
+					List<PromptSetEntry> referencedPromptSets = promptsAndVariables.getPromptSets();
+					for (PromptSetEntry parentPromptSet : referencedPromptSets) {
+						promptSets.add(new PromptSetEntry(parentPromptSet.getPromptSet(), true));
+					}
+					variables.addAll(promptsAndVariables.getVariables());						
+				}
 			} 
 			if (!prompts.isEmpty()) {
-				String actionName = getActionName(actionClass);
-				if (actionName != null) {
+				String promptSetName = getPromptSetName((Class<? extends com.broadcom.apdk.api.IPromptSet>) actionClass);	
+				String promptSetTitle = getPromptSetTitle((Class<? extends com.broadcom.apdk.api.IPromptSet>) actionClass);
+				if (promptSetName != null) {
 					promptSets.add(new PromptSetEntry(new PromptSet(actionPackName.toUpperCase() + 
-							".PRV.PROMPTSET." + actionName, "Input", prompts), false));	
+							".PRV.PROMPTSET." + promptSetName, promptSetTitle, prompts), false));	
 				}
 			}
 			// Recursively check parent classes
 			if (IAction.class.isAssignableFrom(parentClass) && !parentClass.isInterface()) {
 				PromptSetsAndVariables promptsAndVariablesFromParent = getPromptSetsAndVariables(
-						actionPackName, (Class<? extends IAction>) parentClass);
+						actionPackName, (Class<? extends com.broadcom.apdk.api.IPromptSet>) parentClass);
 				List<PromptSetEntry> parentPromptSets = promptsAndVariablesFromParent.getPromptSets();
 				for (PromptSetEntry parentPromptSet : parentPromptSets) {
 					promptSets.add(new PromptSetEntry(parentPromptSet.getPromptSet(), true));
@@ -437,6 +447,38 @@ class ExportService {
 					enumeration.getSimpleName().toUpperCase());
 			variable.setValues(values);
 			return variable;
+		}
+		return null;
+	}
+
+	private String getPromptSetTitle(Class<? extends com.broadcom.apdk.api.IPromptSet> actionOrPromptClass) {
+		if (actionOrPromptClass != null &&
+				actionOrPromptClass.isAnnotationPresent(com.broadcom.apdk.api.annotations.PromptSet.class)) {
+			com.broadcom.apdk.api.annotations.PromptSet annotation = 
+					actionOrPromptClass.getAnnotation(com.broadcom.apdk.api.annotations.PromptSet.class);
+			if (!annotation.title().isEmpty()) {
+				return annotation.title();
+			}
+		}
+		return "Input";
+	}
+	
+	private String getPromptSetName(Class<? extends com.broadcom.apdk.api.IPromptSet> actionOrPromptClass) {
+		if (actionOrPromptClass != null) {
+			if (actionOrPromptClass.isAnnotationPresent(com.broadcom.apdk.api.annotations.PromptSet.class)) {
+				com.broadcom.apdk.api.annotations.PromptSet annotation = 
+						actionOrPromptClass.getAnnotation(com.broadcom.apdk.api.annotations.PromptSet.class);
+				if (!annotation.name().isEmpty()) {
+					return annotation.name().replace(" ", "_").toUpperCase();
+				}
+			}
+			try {
+				com.broadcom.apdk.api.IPromptSet object = actionOrPromptClass.getDeclaredConstructor().newInstance();
+				return object.getName().replace(" ", "_").toUpperCase();
+			} 
+			catch (InstantiationException | IllegalAccessException | IllegalArgumentException | 
+					InvocationTargetException | NoSuchMethodException | SecurityException e) {} 
+			return actionOrPromptClass.getSimpleName().toUpperCase();
 		}
 		return null;
 	}
@@ -735,7 +777,7 @@ class ExportService {
 		
 		String actionName = getActionName(action.getClass());
 		List<IPromptSet> promptSets = new ArrayList<IPromptSet>();
-		PromptSetsAndVariables promptsAndVariables = getPromptSetsAndVariables(actionPackName, action.getClass());
+		PromptSetsAndVariables promptsAndVariables = getPromptSetsAndVariables(actionPackName, (Class<? extends com.broadcom.apdk.api.IPromptSet>) action.getClass());
 		
 		rootFolder = (Folder) FolderHelper.insertObject(rootFolder, "SOURCE", new Folder(actionName));
 		rootFolder = (Folder) FolderHelper.insertObject(rootFolder, "SOURCE/" + actionName, new Folder("INTERNAL"));
@@ -804,6 +846,7 @@ class ExportService {
 		actionWorkflow.setErrorFreeStatus("ANY_OK");
 		actionWorkflow.setGenerateAtRuntime(true);
 		actionWorkflow.setPromptSets(promptSets);
+		actionWorkflow.setDocumentation(action.getDocumentation());
 		 
 		WorkflowStartTask start = new WorkflowStartTask(2);		
 		List<WorkflowTaskPredecessor> predecessors = new ArrayList<WorkflowTaskPredecessor>();
@@ -864,7 +907,7 @@ class ExportService {
 	}
 	
 	private List<IPromptSet> getInitializedPromptSets(IWorkflow workflow, IAction action) {
-		Map<String, Object[]> initValues = ActionHelper.getActinInputParamValues(action);
+		Map<String, Object[]> initValues = ActionHelper.getActionInputParamValues(action);
 		List<IPromptSet> initializedPromptSets = new ArrayList<IPromptSet>();
 		for (IPromptSet promptSet : workflow.getPromptSets()) {
 			List<IPrompt<?>> initializedPrompts = new ArrayList<IPrompt<?>>();
@@ -925,7 +968,7 @@ class ExportService {
 				String arguments = String.join(" ", ActionHelper.getArguments(action, jobType));
 				String checkCmd = ":INCLUDE PCK.ITPA_SHARED.PRV.INCLUDE.CHECK_CMDLINE_CMD@WINDOWS";
 				String attachITPATool = "";
-				if (ActionHelper.hasPasswordFields(action)) {
+				if (ActionHelper.hasPasswordParameters(action)) {
 					attachITPATool = ":ATTACH_RES \"PCK.ITPA_SHARED.PRV.STORE\", \"ITPATOOL.JAR\", C, N\n";
 				} 		
 				if (IJobUnix.class.isAssignableFrom(job.getClass())) {

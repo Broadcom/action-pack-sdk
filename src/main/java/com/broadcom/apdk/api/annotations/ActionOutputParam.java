@@ -24,5 +24,7 @@ import java.lang.annotation.Target;
 public @interface ActionOutputParam {
 	
 	public String name() default "";
+	
+	public boolean password() default false;
 
 }

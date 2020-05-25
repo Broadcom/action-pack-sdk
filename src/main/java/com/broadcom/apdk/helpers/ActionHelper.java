@@ -24,6 +24,7 @@ import java.util.logging.Logger;
 
 import com.broadcom.apdk.api.IAction;
 import com.broadcom.apdk.api.IParamAdapter;
+import com.broadcom.apdk.api.IPromptSet;
 import com.broadcom.apdk.api.ParamAdapter;
 import com.broadcom.apdk.api.annotations.ActionInputParam;
 import com.broadcom.apdk.api.annotations.ActionOutputParam;
@@ -34,50 +35,77 @@ public class ActionHelper {
 	
 	private final static Logger LOGGER = Logger.getLogger("APDK");
 	
-	public static Map<String, Object[]> getActinInputParamValues(IAction action) {
+	public static Map<String, Object[]> getActionInputParamValues(IAction action) {
 		Map<String, Object[]> initValues = new HashMap<String, Object[]>();
-		Map<String, Field> inputParams = getActionInputParams(action);
+		Map<String, List<Field>> inputParams = getActionInputParams(action);
 		for (String fieldName : inputParams.keySet()) {
-			Field field = inputParams.get(fieldName);
-			String variableName = getVariableNameFromParam(field, ActionInputParam.class);
-			Object[] fieldValues = new Object[2];
-			Method getter = getGetter(action.getClass(), field);
-			if (getter == null) {
-				try {
-					field.setAccessible(true);
-					fieldValues[0] = field.get(action);	
-				} catch (IllegalArgumentException | IllegalAccessException e) {
-					LOGGER.warning("Exception: " + e.toString());	
-				}			
-			}
-			else {
-				try {
-					fieldValues[0] = getter.invoke(action);
-				} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-					LOGGER.warning("Exception: " + e.toString());	
+			List<Field> fields = inputParams.get(fieldName);
+			if (!fields.isEmpty() && fields.size() <= 2) {
+				Field field = fields.get(fields.size() - 1);
+				Method getter = getGetter(action.getClass(), field);
+				Object object = action;
+				Field promptSetField = null;
+				if (fields.size() == 2) {
+					promptSetField	= fields.get(0);
+					getter = getGetter(promptSetField.getType(), field);
+					try {
+						promptSetField.setAccessible(true);
+						object = promptSetField.get(action);
+						if (object == null && 
+								com.broadcom.apdk.api.IPromptSet.class.isAssignableFrom(promptSetField.getType())) {
+							Class<?> promptSetClass = promptSetField.getType();
+							object = promptSetClass.getDeclaredConstructor().newInstance();	
+						}
+					} catch (IllegalArgumentException | IllegalAccessException | InstantiationException | 
+							InvocationTargetException | NoSuchMethodException | SecurityException e) {
+						LOGGER.warning("Exception: " + e.toString());	
+					}	
 				}
-			}	
-			if (fieldValues[0] != null) {
-				fieldValues[1] = getParamAsString(field, action);
-				if (Enum.class.isAssignableFrom(field.getType())) {
-					Field[] enumFields = field.getType().getDeclaredFields();
-					if (enumFields != null) {
-						for (Field enumField : enumFields) {
-							if (enumField.isEnumConstant()) {
-								String value = enumField.getName();
-								if (enumField.isAnnotationPresent(EnumValue.class) &&
-										value.equals(fieldValues[1])) {
-									EnumValue annotation = enumField.getAnnotation(EnumValue.class);
-									fieldValues[1] = annotation.value();
+				String variableName = getVariableNameFromParam(field, ActionInputParam.class);
+				Object[] fieldValues = new Object[2];
+				fieldValues[0] = getValue(getter, field, object);
+
+				if (fieldValues[0] != null) {
+					fieldValues[1] = getParamAsString(field, (IPromptSet) object);
+					if (Enum.class.isAssignableFrom(field.getType())) {
+						Field[] enumFields = field.getType().getDeclaredFields();
+						if (enumFields != null) {
+							for (Field enumField : enumFields) {
+								if (enumField.isEnumConstant()) {
+									String value = enumField.getName();
+									if (enumField.isAnnotationPresent(EnumValue.class) &&
+											value.equals(fieldValues[1])) {
+										EnumValue annotation = enumField.getAnnotation(EnumValue.class);
+										fieldValues[1] = annotation.value();
+									}
 								}
 							}
 						}
 					}
+					initValues.put(variableName, fieldValues);
 				}
-				initValues.put(variableName, fieldValues);
 			}
 		}
 		return initValues;
+	}
+	
+	private static Object getValue(Method getter, Field field, Object object) {
+		if (getter == null) {
+			try {
+				field.setAccessible(true);
+				return field.get(object);	
+			} catch (IllegalArgumentException | IllegalAccessException e) {
+				LOGGER.warning("Exception: " + e.toString());	
+			}			
+		}
+		else {
+			try {
+				return getter.invoke(object);
+			} catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+				LOGGER.warning("Exception: " + e.toString());	
+			}
+		}
+		return null;			
 	}
 	
 	private static Method getGetter(Class<?> objClass, Field field) {
@@ -111,23 +139,34 @@ public class ActionHelper {
 		return methods;
 	}
 	
-	public static boolean hasPasswordFields(IAction action) {
+	public static boolean hasPasswordParameters(IAction action) {
 		Class<? extends IAction> actionClass = action.getClass();
 		if (actionClass != null) {
-			Map<String, Field> inputParams = ActionHelper.getActionInputParams(action);
+			Map<String, List<Field>> inputParams = ActionHelper.getActionInputParams(action);
 			for (String paramName : inputParams.keySet()) {
-				Field field = inputParams.get(paramName);
-				if (isPasswordField(field)) {
-					return true;
+				List<Field> fieldHierarchy = inputParams.get(paramName);
+				if (!fieldHierarchy.isEmpty()) {
+					Field field = fieldHierarchy.get(fieldHierarchy.size() - 1);
+					if (isPasswordParameter(field)) {
+						return true;
+					}
 				}
 			}
 		}
 		return false;
 	}
 	
+	public static String getEncryptedPassword(String decryptedPassword) {
+		return callItpaTool("encrypt", decryptedPassword);
+	}
+	
 	public static String getDecryptedPassword(String encryptedPassword) {
+		return callItpaTool("decrypt", encryptedPassword);
+	}
+	
+	private static String callItpaTool(String command, String password) {
 		ProcessBuilder processBuilder = new ProcessBuilder();
-		String decrpytedPassword = encryptedPassword;
+		String returnValue = password;
 		File itpaTool = null;
 		try {
 			Path jarFile = new File(ActionHelper.class.getProtectionDomain().
@@ -137,20 +176,20 @@ public class ActionHelper {
 			itpaTool = new File(folder + "itpa-tool.jar");
 		} 
 		catch (URISyntaxException e1) {
-			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encryptedPassword + "\"");
+			LOGGER.severe("Failed to find \"itpa-tool.jar\" to " + command + " \"" + password + "\"");
 		}
 		
 		if (itpaTool != null && itpaTool.isFile() && itpaTool.exists()) {
-			LOGGER.info("Found \"itpa-tool.jar\" to decrypt \"" + encryptedPassword + "\"");	
+			LOGGER.info("Found \"itpa-tool.jar\" to " + command + " \"" + password + "\"");	
 			String shell = "bash";
 			String shellArg = "-c";		
 			if (System.getProperty("os.name").toUpperCase().contains("WINDOWS")) {
 				shell = "cmd.exe";
 				shellArg = "/c";					
 			}
-			String command = "java -jar \"" + itpaTool.toPath() + 
-					"\" ARB -cmd cipher decrypt \"" + encryptedPassword + "\"";
-			processBuilder.command(shell, shellArg, command);
+			String cmd = "java -jar \"" + itpaTool.toPath() + 
+					"\" ARB -cmd cipher " + command + " \"" + password + "\"";
+			processBuilder.command(shell, shellArg, cmd);
 			try {
 				Process process = processBuilder.start();
 				StringBuilder output = new StringBuilder();
@@ -159,10 +198,14 @@ public class ActionHelper {
 
 				String line;
 				while ((line = reader.readLine()) != null) {
-					if (line.startsWith("Decrypted: ") && line.length() > 11) {
-						decrpytedPassword = line.substring(11);	
-						LOGGER.info("Successfully decrypted \"" + encryptedPassword + "\"");	
+					if (command.equals("decrypt") && line.startsWith("Decrypted: ") && line.length() > 11) {
+						returnValue = line.substring(11);	
+						LOGGER.info("Successfully decrypted \"" + password + "\"");	
 					}
+					else if (command.equals("encrypt") && line.startsWith("Encrypted: ") && line.length() > 11) {
+						returnValue = line.substring(11);	
+						LOGGER.info("Successfully encrypted \"" + password + "\"");						
+					}	
 					output.append(line + "\n");
 				}
 
@@ -179,20 +222,23 @@ public class ActionHelper {
 			}
 		}
 		else {
-			LOGGER.severe("Failed to find \"itpa-tool.jar\" to decrypt \"" + encryptedPassword + "\"");
+			LOGGER.severe("Failed to find \"itpa-tool.jar\" to " + command + " \"" + password + "\"");
 		}
-		return decrpytedPassword;
+		return returnValue;
 	}
 	
-	public static List<Field> getPasswordFields(IAction action) {
+	public static List<Field> getPasswordInputParameters(IAction action) {
 		List<Field> passwordFields = new ArrayList<Field>();
 		Class<? extends IAction> actionClass = action.getClass();
 		if (actionClass != null) {
-			Map<String, Field> inputParams = ActionHelper.getActionInputParams(action);
+			Map<String, List<Field>> inputParams = ActionHelper.getActionInputParams(action);
 			for (String paramName : inputParams.keySet()) {
-				Field field = inputParams.get(paramName);
-				if (isPasswordField(field)) {
-					passwordFields.add(field);
+				List<Field> fieldHierarchy = inputParams.get(paramName);
+				if (!fieldHierarchy.isEmpty()) {
+					Field field = fieldHierarchy.get(fieldHierarchy.size() - 1);
+					if (isPasswordInputParameter(field)) {
+						passwordFields.add(field);
+					}
 				}
 			}
 		}
@@ -203,17 +249,20 @@ public class ActionHelper {
 		List<String> arguments = new ArrayList<String>();
 		Class<? extends IAction> actionClass = action.getClass();
 		if (actionClass != null) {
-			Map<String, Field> inputParams = ActionHelper.getActionInputParams(action);
+			Map<String, List<Field>> inputParams = ActionHelper.getActionInputParams(action);
 			for (String paramName : inputParams.keySet()) {
-				Field field = inputParams.get(paramName);
-				String variableName = ActionHelper.getVariableNameFromParam(field, ActionInputParam.class);
-				arguments.add(paramName + "=\"" + variableName + "\"");
+				List<Field> fieldHierarchy = inputParams.get(paramName);
+				if (!fieldHierarchy.isEmpty()) {
+					Field field = fieldHierarchy.get(fieldHierarchy.size() - 1);
+					String variableName = ActionHelper.getVariableNameFromParam(field, ActionInputParam.class);
+					arguments.add(paramName + "=\"" + variableName + "\"");
+				}
 			}
 		}
 		return arguments.toArray(new String[arguments.size()]);
 	}
 	
-	public static boolean isPasswordField(Field field) {
+	public static boolean isPasswordInputParameter(Field field) {
 		ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
 		if (annotation != null && annotation.password()) {
 			return true;
@@ -221,12 +270,24 @@ public class ActionHelper {
 		return false;
 	}
 	
-	public static String getParamAsString(Field field, IAction action) {
-		if (field != null && action != null) {
+	public static boolean isPasswordOutputParameter(Field field) {
+		ActionOutputParam annotation = field.getAnnotation(ActionOutputParam.class);
+		if (annotation != null && annotation.password()) {
+			return true;
+		}
+		return false;
+	}
+	
+	public static boolean isPasswordParameter(Field field) {
+		return isPasswordOutputParameter(field) || isPasswordInputParameter(field);
+	}
+	
+	public static String getParamAsString(Field field, IPromptSet actionOrPromptSet) {
+		if (field != null && actionOrPromptSet != null) {
 			try {
 				if (field != null) {
 					field.setAccessible(true);
-					Object value = field.get(action);
+					Object value = field.get(actionOrPromptSet);
 					if (value != null) {
 						// Check if an adapter was defined
 						if (field.isAnnotationPresent(ActionParamAdapter.class)) {
@@ -303,9 +364,9 @@ public class ActionHelper {
 	}
 	
 	@SuppressWarnings({ "unchecked", "unused", "rawtypes" })
-	public static <T> T getParamAsOriginalType(Field field, IAction action, String value) {
+	public static <T> T getArgumentAsParamType(Field field, String value) {
 		Class<?> T = field != null ? field.getType() : Object.class;
-		if (field != null && action != null) {
+		if (field != null) {
 			try {
 				if (field != null) {
 					field.setAccessible(true);
@@ -359,6 +420,19 @@ public class ActionHelper {
 							return (T) Short.valueOf(value);
 						}	
 						else if (Enum.class.isAssignableFrom(field.getType())) {
+							Field[] enumFields = field.getType().getDeclaredFields();
+							if (enumFields != null) {
+								for (Field enumField : enumFields) {
+									if (enumField.isEnumConstant()) {
+										if (enumField.isAnnotationPresent(EnumValue.class)) {
+											EnumValue annotation = enumField.getAnnotation(EnumValue.class);
+											if (value.equals(annotation.value())) {
+												return (T) Enum.valueOf((Class<? extends Enum>) field.getType(), enumField.getName());
+											}
+										}
+									}
+								}
+							}
 							return (T) Enum.valueOf((Class<? extends Enum>) field.getType(), value);	
 						}
 						else if (LocalDate.class.equals(field.getType())) {
@@ -418,28 +492,31 @@ public class ActionHelper {
 	public static Map<String, String> getCDAMappings(List<IAction> actions) {
 		Map<String, String> mappings = new HashMap<String, String>();
 		for (IAction action : actions) {
-			Map<String, Field> inputParams = getActionInputParams(action);	
+			Map<String, List<Field>> inputParams = getActionInputParams(action);	
 			for (String fieldName : inputParams.keySet()) {
-				Field field = inputParams.get(fieldName);
-				ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
-				if (!annotation.cdaMapping().isEmpty()) {
-					String key = action.getName() != null ? 
-							action.getName().replace(" ", "_").toUpperCase() : 
-							action.getClass().getSimpleName().toUpperCase();
-					String paramName = field.getName().toUpperCase() + "#";
-					if (!annotation.name().isEmpty()) {
-						paramName = annotation.name();
-						if (paramName.startsWith("&")) {
-							paramName = paramName.substring(1);
+				List<Field> fieldHierarchy = inputParams.get(fieldName);
+				if (!fieldHierarchy.isEmpty()) {
+					Field field = fieldHierarchy.get(fieldHierarchy.size() - 1);
+					ActionInputParam annotation = field.getAnnotation(ActionInputParam.class);
+					if (!annotation.cdaMapping().isEmpty()) {
+						String key = action.getName() != null ? 
+								action.getName().replace(" ", "_").toUpperCase() : 
+								action.getClass().getSimpleName().toUpperCase();
+						String paramName = field.getName().toUpperCase() + "#";
+						if (!annotation.name().isEmpty()) {
+							paramName = annotation.name();
+							if (paramName.startsWith("&")) {
+								paramName = paramName.substring(1);
+							}
+							if (!paramName.endsWith("#")) {
+								paramName += "#";
+							}
 						}
-						if (!paramName.endsWith("#")) {
-							paramName += "#";
-						}
+						key += "/" + paramName;
+						LOGGER.info("Found CDA mapping for \"" + key + 
+								"\": \"" + annotation.cdaMapping() + "\"");
+						mappings.put(key, annotation.cdaMapping());
 					}
-					key += "/" + paramName;
-					LOGGER.info("Found CDA mapping for \"" + key + 
-							"\": \"" + annotation.cdaMapping() + "\"");
-					mappings.put(key, annotation.cdaMapping());
 				}
 			}
 		}
@@ -447,23 +524,45 @@ public class ActionHelper {
 	}
 	
 	public static Map<String, Field> getActionOutputParams(IAction action) {
-		return getActionParams(action.getClass(), ActionOutputParam.class);
+		Map<String, Field> outputParams = new HashMap<String, Field>();
+		Map<String, List<Field>> params = getActionParams(action.getClass(), ActionOutputParam.class);
+		for (String fieldName : params.keySet()) {
+			List<Field> fieldHierarchy = params.get(fieldName);
+			if (fieldHierarchy.size() == 1) {
+				outputParams.put(fieldName, fieldHierarchy.get(0));	
+			}
+		}
+		return outputParams;
 	}
 	
-	public static Map<String, Field> getActionInputParams(IAction action) {
+	public static Map<String, List<Field>> getActionInputParams(IAction action) {
 		return getActionParams(action.getClass(), ActionInputParam.class);
 	}	
 	
 	@SuppressWarnings("unchecked")
-	private static Map<String, Field> getActionParams(Class<? extends IAction> actionClass, 
+	private static Map<String, List<Field>> getActionParams(Class<? extends com.broadcom.apdk.api.IPromptSet> actionClass, 
 			Class<? extends Annotation> annotationClass) {
-		Map<String, Field> inputParams = new HashMap<String, Field>();
+		Map<String, List<Field>> inputParams = new HashMap<String, List<Field>>();
 		if (actionClass != null) {
 			Class<?> parentClass = actionClass.getSuperclass();
 			Field[] fields = actionClass.getDeclaredFields();
 			for (Field field : fields) {
 				if (field.isAnnotationPresent(annotationClass)) {
-					inputParams.put(field.getName(), field);	
+					List<Field> fieldHierarchy= new ArrayList<Field>();
+					fieldHierarchy.add(field);
+					inputParams.put(field.getName(), fieldHierarchy);	
+				}
+				else if (IAction.class.isAssignableFrom(actionClass) &&
+						ActionInputParam.class.isAssignableFrom(annotationClass) &&
+						com.broadcom.apdk.api.IPromptSet.class.isAssignableFrom(field.getType())) {
+					Map<String, List<Field>> refParams = 
+							getActionParams((Class<? extends IPromptSet>) field.getType(), annotationClass);
+					for (String fieldName : refParams.keySet()) {
+						List<Field> fieldHierarchy= new ArrayList<Field>();
+						fieldHierarchy.add(field);
+						fieldHierarchy.addAll(refParams.get(fieldName));
+						inputParams.put(fieldName, fieldHierarchy);	
+					}
 				}
 			}
 			if (IAction.class.isAssignableFrom(parentClass) && !parentClass.isInterface()) {
