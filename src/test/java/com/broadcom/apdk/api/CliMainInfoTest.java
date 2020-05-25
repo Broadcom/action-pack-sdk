@@ -11,6 +11,7 @@ import java.util.List;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -41,6 +42,7 @@ public class CliMainInfoTest extends ApiTest {
 	}
 	
 	@Test
+	@Disabled
 	public void testInfoOneActionPack() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -58,6 +60,7 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
+	@Disabled
 	public void testInfoMultipleActionPacks() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -77,6 +80,7 @@ public class CliMainInfoTest extends ApiTest {
 	}
 	
 	@Test
+	@Disabled
 	public void testInfoActionPacksWithAction() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -96,6 +100,7 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
+	@Disabled
 	public void testInfoMultipleActionPacksWithActions() {		
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
@@ -119,6 +124,7 @@ public class CliMainInfoTest extends ApiTest {
 	}
 
 	@Test
+	@Disabled
 	public void testInfoMultipleActionPacksWithActionsSpecific() {	
 		List<String> sourceFileNames = new ArrayList<String>();
 		sourceFileNames.add("TestActionPack1.java");
